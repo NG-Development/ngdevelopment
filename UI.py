@@ -21,6 +21,23 @@ class UI:
         self.label = Label(master, image = self.plane)
         self.label.image = self.plane
         self.label.grid(row=0, column=0, rowspan=4, columnspan=4)
+        
+         """ x,y,z coords """
+        self.xcoord = Label(master, text = "X-coordinates")
+        self.ycoord = Label(master, text = "Y-coordinates")
+        self.zcoord = Label(master, text = "Z-coordinates")
+
+        self.xentry = Entry(master)
+        self.yentry = Entry(master)
+        self.zentry = Entry(master)
+        
+        self.xcoord.grid(row = 4, column = 0)
+        self.ycoord.grid(row = 4, column = 1)
+        self.zcoord.grid(row = 4, column = 2)
+
+        self.xentry.grid(row = 5, column = 0)
+        self.yentry.grid(row = 5, column = 1)
+        self.zentry.grid(row = 5, column = 2) 
 
 
 
