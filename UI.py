@@ -38,7 +38,27 @@ class UI:
         self.xentry.grid(row = 5, column = 0)
         self.yentry.grid(row = 5, column = 1)
         self.zentry.grid(row = 5, column = 2) 
+        
+          # ----> toolbar <----
+        menu = Menu(root)
+        root.config(menu = menu)
 
+        # -- subMenu --
+        subMenu = Menu(menu)
+
+        # -- File --
+        menu.add_cascade(label = "File", menu = subMenu)
+        
+        subMenu.add_command(label = "New", command = self.menuCommands)
+        subMenu.add_command(label = "Import", command = self.menuCommands)
+        subMenu.add_command(label = "Export as...", command = self.menuCommands)
+        subMenu.add_separator()
+        subMenu.add_command(label = "Exit", command = self.menuCommands)
+
+        # -- Tools --
+        toolsMenu = Menu(menu)
+        menu.add_cascade(label = "Tools", menu = toolsMenu)
+        toolsMenu.add_command(label = "Import and Export Settings...", command = self.menuCommands)    
 
 
 root = Tk()
