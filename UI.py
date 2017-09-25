@@ -22,7 +22,7 @@ class UI:
         self.label.image = self.plane
         self.label.grid(row=0, column=0, rowspan=4, columnspan=4)
         
-         """ x,y,z coords """
+        """ x,y,z coords """
         self.xcoord = Label(master, text = "X-coordinates")
         self.ycoord = Label(master, text = "Y-coordinates")
         self.zcoord = Label(master, text = "Z-coordinates")
@@ -49,16 +49,16 @@ class UI:
         # -- File --
         menu.add_cascade(label = "File", menu = subMenu)
         
-        subMenu.add_command(label = "New", command = self.menuCommands)
-        subMenu.add_command(label = "Import", command = self.menuCommands)
-        subMenu.add_command(label = "Export as...", command = self.menuCommands)
-        subMenu.add_separator()
-        subMenu.add_command(label = "Exit", command = self.menuCommands)
+        #subMenu.add_command(label = "New", command = self.menuCommands)
+        #subMenu.add_command(label = "Import", command = self.menuCommands)
+        #subMenu.add_command(label = "Export as...", command = self.menuCommands)
+        #subMenu.add_separator()
+        #subMenu.add_command(label = "Exit", command = self.menuCommands)
 
         # -- Tools --
         toolsMenu = Menu(menu)
         menu.add_cascade(label = "Tools", menu = toolsMenu)
-        toolsMenu.add_command(label = "Import and Export Settings...", command = self.menuCommands)    
+        #toolsMenu.add_command(label = "Import and Export Settings...", command = self.menuCommands)
 
 
 root = Tk()
