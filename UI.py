@@ -1,29 +1,70 @@
-from tkinter import *
-from PIL import ImageTk, Image
-#import vtk
+import sys
+import vtk
+from PyQt4 import QtCore, QtGui
+from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+
+class MainWindow(QtGui.QMainWindow):
+
+    solid = 1
+
+    def __init__(self, parent=None):
+        QtGui.QMainWindow.__init__(self, parent)
+
+        self.frame = QtGui.QFrame()
+
+        self.layout = QtGui.QVBoxLayout()
+        self.vtkWidget = QVTKRenderWindowInteractor(self.frame)
+        self.layout.addWidget(self.vtkWidget)
+
+        self.render = vtk.vtkRenderer()
+        self.vtkWidget.GetRenderWindow().AddRenderer(self.render)
+        self.interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
+
+        filename = "F117_.stl"
+
+        reader = vtk.vtkSTLReader()
+        reader.SetFileName(filename)
+
+        mapper = vtk.vtkPolyDataMapper()
+        if vtk.VTK_MAJOR_VERSION <= 5:
+            mapper.SetInput(reader.GetOutput())
+        else:
+            mapper.SetInputConnection(reader.GetOutputPort())
+
+        # Create an actor
+        global actor
+        actor = vtk.vtkActor()
+        actor.SetMapper(mapper)
+
+        self.render.AddActor(actor)
+
+        self.render.ResetCamera()
+
+        self.frame.setLayout(self.layout)
+        self.setCentralWidget(self.frame)
+
+        self.show()
+        self.interactor.Initialize()
+
+        self.planes = QtGui.QPushButton('Import Plane Model', self)
+        self.layout.addWidget(self.planes)
+
+        self.wireframe = QtGui.QPushButton('Toggle Wireframe Mode', self)
+        self.layout.addWidget(self.wireframe)
+        self.wireframe.clicked.connect(self.handleButton)
+
+    def handleButton(self):
+        if self.solid == 1:
+            actor.GetProperty().SetRepresentationToWireframe()
+            self.solid = 0
+        else:
+            actor.GetProperty().SetRepresentationToSurface()
+            self.solid = 1
 
 
-class UI:
-    def __init__(self, master):
-        self.master = master
-        master.title("CEESIM Visualizer")
-        self.antennas = Button(master, text="Import Antennas")
-        self.mod = Button(master, text="Modify Antennas")
-        self.planes = Button(master, text="Planes")
-        self.wireframe = Button(master, text="Wireframe On/Off")
-        self.canvas = Canvas()
-        self.antennas.grid(row=0, column=5, sticky="ENWS")
-        self.mod.grid(row=1, column=5, sticky="ENWS")
-        self.planes.grid(row=2, column=5, sticky="ENWS")
-        self.wireframe.grid(row=3, column=5, sticky="ENWS")
-        self.path = "f22.jpg"
-        self.plane = ImageTk.PhotoImage(Image.open(self.path))
-        self.label = Label(master, image = self.plane)
-        self.label.image = self.plane
-        self.label.grid(row=0, column=0, rowspan=4, columnspan=4)
+if __name__ == "__main__":
+    app = QtGui.QApplication(sys.argv)
 
+    window = MainWindow()
 
-
-root = Tk()
-myUI = UI(root)
-root.mainloop()
+    sys.exit(app.exec_())
