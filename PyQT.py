@@ -21,13 +21,27 @@ class MainWindow(QtGui.QMainWindow):
         self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
 
         # Create source
-        source = vtk.vtkSphereSource()
-        source.SetCenter(0, 0, 0)
-        source.SetRadius(5.0)
+        #source = vtk.vtkSphereSource()
+        #source.SetCenter(0, 0, 0)
+        #source.SetRadius(5.0)
+
+        filename = "space.stl"
+
+        reader = vtk.vtkSTLReader()
+        reader.SetFileName(filename)
+
+        mapper = vtk.vtkPolyDataMapper()
+        if vtk.VTK_MAJOR_VERSION <= 5:
+            mapper.SetInput(reader.GetOutput())
+        else:
+            mapper.SetInputConnection(reader.GetOutputPort())
+
+        actor = vtk.vtkActor()
+        actor.SetMapper(mapper)
 
         # Create a mapper
-        mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputConnection(source.GetOutputPort())
+        #mapper = vtk.vtkPolyDataMapper()
+        #mapper.SetInputConnection(source.GetOutputPort())
 
         # Create an actor
         actor = vtk.vtkActor()
