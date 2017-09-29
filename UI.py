@@ -1,66 +1,70 @@
-from tkinter import *
-from PIL import ImageTk, Image
-#import vtk
+import sys
+import vtk
+from PyQt4 import QtCore, QtGui
+from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+
+class UI(QtGui.QMainWindow):
+
+    solid = 1
+
+    def __init__(self, parent=None):
+        QtGui.QMainWindow.__init__(self, parent)
+
+        self.frame = QtGui.QFrame()
+
+        self.layout = QtGui.QVBoxLayout()
+        self.vtkWidget = QVTKRenderWindowInteractor(self.frame)
+        self.layout.addWidget(self.vtkWidget)
+
+        self.render = vtk.vtkRenderer()
+        self.vtkWidget.GetRenderWindow().AddRenderer(self.render)
+        self.interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
+
+        filename = "F117_.stl"
+
+        reader = vtk.vtkSTLReader()
+        reader.SetFileName(filename)
+
+        mapper = vtk.vtkPolyDataMapper()
+        if vtk.VTK_MAJOR_VERSION <= 5:
+            mapper.SetInput(reader.GetOutput())
+        else:
+            mapper.SetInputConnection(reader.GetOutputPort())
+
+        # Create an actor
+        global actor
+        actor = vtk.vtkActor()
+        actor.SetMapper(mapper)
+
+        self.render.AddActor(actor)
+
+        self.render.ResetCamera()
+
+        self.frame.setLayout(self.layout)
+        self.setCentralWidget(self.frame)
+
+        self.show()
+        self.interactor.Initialize()
+
+        self.planes = QtGui.QPushButton('Import Plane Model', self)
+        self.layout.addWidget(self.planes)
+
+        self.wireframe = QtGui.QPushButton('Toggle Wireframe Mode', self)
+        self.layout.addWidget(self.wireframe)
+        self.wireframe.clicked.connect(self.handleButton)
+
+    def handleButton(self):
+        if self.solid == 1:
+            actor.GetProperty().SetRepresentationToWireframe()
+            self.solid = 0
+        else:
+            actor.GetProperty().SetRepresentationToSurface()
+            self.solid = 1
 
 
-class UI:
-    def __init__(self, master):
-        self.master = master
-        master.title("CEESIM Visualizer")
-        self.antennas = Button(master, text="Import Antennas")
-        self.mod = Button(master, text="Modify Antennas")
-        self.planes = Button(master, text="Planes")
-        self.wireframe = Button(master, text="Wireframe On/Off")
-        self.canvas = Canvas()
-        self.antennas.grid(row=0, column=5, sticky="ENWS")
-        self.mod.grid(row=1, column=5, sticky="ENWS")
-        self.planes.grid(row=2, column=5, sticky="ENWS")
-        self.wireframe.grid(row=3, column=5, sticky="ENWS")
-        self.path = "f22.jpg"
-        self.plane = ImageTk.PhotoImage(Image.open(self.path))
-        self.label = Label(master, image = self.plane)
-        self.label.image = self.plane
-        self.label.grid(row=0, column=0, rowspan=4, columnspan=4)
-        
-        """ x,y,z coords """
-        self.xcoord = Label(master, text = "X-coordinates")
-        self.ycoord = Label(master, text = "Y-coordinates")
-        self.zcoord = Label(master, text = "Z-coordinates")
+if __name__ == "__main__":
+    app = QtGui.QApplication(sys.argv)
 
-        self.xentry = Entry(master)
-        self.yentry = Entry(master)
-        self.zentry = Entry(master)
-        
-        self.xcoord.grid(row = 4, column = 0)
-        self.ycoord.grid(row = 4, column = 1)
-        self.zcoord.grid(row = 4, column = 2)
+    window = MainWindow()
 
-        self.xentry.grid(row = 5, column = 0)
-        self.yentry.grid(row = 5, column = 1)
-        self.zentry.grid(row = 5, column = 2) 
-        
-          # ----> toolbar <----
-        menu = Menu(root)
-        root.config(menu = menu)
-
-        # -- subMenu --
-        subMenu = Menu(menu)
-
-        # -- File --
-        menu.add_cascade(label = "File", menu = subMenu)
-        
-        #subMenu.add_command(label = "New", command = self.menuCommands)
-        #subMenu.add_command(label = "Import", command = self.menuCommands)
-        #subMenu.add_command(label = "Export as...", command = self.menuCommands)
-        #subMenu.add_separator()
-        #subMenu.add_command(label = "Exit", command = self.menuCommands)
-
-        # -- Tools --
-        toolsMenu = Menu(menu)
-        menu.add_cascade(label = "Tools", menu = toolsMenu)
-        #toolsMenu.add_command(label = "Import and Export Settings...", command = self.menuCommands)
-
-
-root = Tk()
-myUI = UI(root)
-root.mainloop()
+    sys.exit(app.exec_())
