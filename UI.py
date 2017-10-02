@@ -84,7 +84,7 @@ class UI(QtGui.QMainWindow):
     #importing OBJ currently
     def readfiles(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import Models")
-        print filename
+        #print filename
         file = open(filename, "r")
         #self.render.RemoveActor(actor)
         
