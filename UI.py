@@ -32,11 +32,11 @@ class MainWindow(QtGui.QMainWindow):
             mapper.SetInputConnection(reader.GetOutputPort())
 
         # Create an actor
-        global actor
-        actor = vtk.vtkActor()
-        actor.SetMapper(mapper)
 
-        self.render.AddActor(actor)
+        self.actor = vtk.vtkActor()
+        self.actor.SetMapper(mapper)
+
+        self.render.AddActor(self.actor)
 
         self.render.ResetCamera()
 
@@ -55,11 +55,13 @@ class MainWindow(QtGui.QMainWindow):
 
     def handleButton(self):
         if self.solid == 1:
-            actor.GetProperty().SetRepresentationToWireframe()
+            self.actor.GetProperty().SetRepresentationToWireframe()
             self.solid = 0
+            self.interactor.Render()
         else:
-            actor.GetProperty().SetRepresentationToSurface()
+            self.actor.GetProperty().SetRepresentationToSurface()
             self.solid = 1
+            self.interactor.Render()
 
 
 if __name__ == "__main__":
