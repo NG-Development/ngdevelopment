@@ -1,9 +1,10 @@
+
 import sys
 import vtk
 from PyQt4 import QtCore, QtGui
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-class MainWindow(QtGui.QMainWindow):
+class UI(QtGui.QMainWindow):
 
     solid = 1
 
@@ -31,24 +32,12 @@ class MainWindow(QtGui.QMainWindow):
         else:
             mapper.SetInputConnection(reader.GetOutputPort())
 
-##        #Reads .obj file and renders into window
-##        filename1 = "millenium.obj"
-##
-##        reader = vtk.vtkOBJReader()
-##        reader.SetFileName(filename1)
-##
-##        mapper = vtk.vtkPolyDataMapper()
-##        if vtk.VTK_MAJOR_VERSION <= 5:
-##            mapper.SetInput(reader.GetOutput())
-##        else:
-##            mapper.SetInputConnection(reader.GetOutputPort())
-
         # Create an actor
-        global actor
-        actor = vtk.vtkActor()
-        actor.SetMapper(mapper)
 
-        self.render.AddActor(actor)
+        self.actor = vtk.vtkActor()
+        self.actor.SetMapper(mapper)
+
+        self.render.AddActor(self.actor)
 
         self.render.ResetCamera()
 
@@ -58,47 +47,27 @@ class MainWindow(QtGui.QMainWindow):
         self.show()
         self.interactor.Initialize()
 
-        #Import button
         self.planes = QtGui.QPushButton('Import Plane Model', self)
         self.layout.addWidget(self.planes)
-        self.planes.clicked.connect(self.readfiles)
 
-        #Wireframe button
         self.wireframe = QtGui.QPushButton('Toggle Wireframe Mode', self)
         self.layout.addWidget(self.wireframe)
         self.wireframe.clicked.connect(self.handleButton)
 
     def handleButton(self):
         if self.solid == 1:
-            actor.GetProperty().SetRepresentationToWireframe()
+            self.actor.GetProperty().SetRepresentationToWireframe()
             self.solid = 0
+            self.interactor.Render()
         else:
-            actor.GetProperty().SetRepresentationToSurface()
+            self.actor.GetProperty().SetRepresentationToSurface()
             self.solid = 1
-
-    def readfiles(self):
-        filename = QtGui.QFileDialog.getOpenFileName(self, "Import Models")
-        file = open(filename, "r")
-
-##        with file:
-##            reader = vtk.vtkOBJReader()
-##            reader.SetFileName(filename)
-##
-##            mapper = vtk.vtkPolyDataMapper()
-##            if vtk.VTK_MAJOR_VERSION <= 5:
-##                mapper.SetInput(reader.GetOutput())
-##            else:
-##                mapper.SetInputConnection(reader.GetOutputPort())
-##
-##            actor = vtk.vtkActor()
-##            actor.SetMapper(mapper)
-
-                
+            self.interactor.Render()
 
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
 
-    window = MainWindow()
+    window = UI()
 
-    sys.exit(app.exec_()) 
+    sys.exit(app.exec_())
