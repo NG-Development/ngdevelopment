@@ -3,7 +3,7 @@ import vtk
 from PyQt4 import QtCore, QtGui
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-class MainWindow(QtGui.QMainWindow):
+class UI(QtGui.QMainWindow):
 
     solid = 1
 
