@@ -20,17 +20,9 @@ class UI(QtGui.QMainWindow):
         self.vtkWidget.GetRenderWindow().AddRenderer(self.render)
         self.interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
 
-        #filename = "F117_.stl"
-
-        #reader = vtk.vtkSTLReader()
-        #reader.SetFileName(filename)
 
         mapper = vtk.vtkPolyDataMapper()
-        #if vtk.VTK_MAJOR_VERSION <= 5:
-         #   mapper.SetInput(reader.GetOutput())
-        #else:
-         #   mapper.SetInputConnection(reader.GetOutputPort())
-##
+
 ##        #Reads .obj file and renders into window
 ##        filename1 = "millenium.obj"
 ##
@@ -67,6 +59,8 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.wireframe)
         self.wireframe.clicked.connect(self.handleButton)
 
+        
+       
 
     def handleButton(self):
         if self.solid == 1:
@@ -100,7 +94,6 @@ class UI(QtGui.QMainWindow):
             self.render.AddActor(self.actor)
             self.render.ResetCamera()
             self.interactor.Render()
-
 
                 
 
