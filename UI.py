@@ -102,6 +102,7 @@ class UI(QtGui.QMainWindow):
             actor = vtk.vtkActor()
             actor.SetMapper(mapper)
             self.render.AddActor(actor)
+            self.render.ResetCamera()
             self.interactor.Render()
 
                 
