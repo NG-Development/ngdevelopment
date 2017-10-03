@@ -20,16 +20,16 @@ class UI(QtGui.QMainWindow):
         self.vtkWidget.GetRenderWindow().AddRenderer(self.render)
         self.interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
 
-        filename = "F117_.stl"
+##        filename = "F117_.stl"
 
-        reader = vtk.vtkSTLReader()
-        reader.SetFileName(filename)
+##        reader = vtk.vtkSTLReader()
+##        reader.SetFileName(filename)
 
         mapper = vtk.vtkPolyDataMapper()
-        if vtk.VTK_MAJOR_VERSION <= 5:
-            mapper.SetInput(reader.GetOutput())
-        else:
-            mapper.SetInputConnection(reader.GetOutputPort())
+##        if vtk.VTK_MAJOR_VERSION <= 5:
+##            mapper.SetInput(reader.GetOutput())
+##        else:
+##            mapper.SetInputConnection(reader.GetOutputPort())
 ##
 ##        #Reads .obj file and renders into window
 ##        filename1 = "millenium.obj"
@@ -44,7 +44,7 @@ class UI(QtGui.QMainWindow):
 ##            mapper.SetInputConnection(reader.GetOutputPort())
 
         # Create an actor
-        global actor
+        #global actor
         actor = vtk.vtkActor()
         actor.SetMapper(mapper)
 
@@ -73,11 +73,11 @@ class UI(QtGui.QMainWindow):
 
     def handleButton(self):
         if self.solid == 1:
-            actor.GetProperty().SetRepresentationToWireframe()
+            self.actor.GetProperty().SetRepresentationToWireframe()
             self.interactor.Render()
             self.solid = 0
         else:
-            actor.GetProperty().SetRepresentationToSurface()
+            self.actor.GetProperty().SetRepresentationToSurface()
             self.interactor.Render()
             self.solid = 1
 
@@ -99,9 +99,9 @@ class UI(QtGui.QMainWindow):
             else:
                 mapper.SetInputConnection(reader.GetOutputPort())
 
-            actor = vtk.vtkActor()
-            actor.SetMapper(mapper)
-            self.render.AddActor(actor)
+            self.actor = vtk.vtkActor()
+            self.actor.SetMapper(mapper)
+            self.render.AddActor(self.actor)
             self.render.ResetCamera()
             self.interactor.Render()
 
