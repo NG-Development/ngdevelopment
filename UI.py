@@ -99,7 +99,6 @@ class UI(QtGui.QMainWindow):
             else:
                 mapper.SetInputConnection(reader.GetOutputPort())
 
-            self.actor = vtk.vtkActor()
             self.actor.SetMapper(mapper)
             self.render.AddActor(self.actor)
             self.render.ResetCamera()
