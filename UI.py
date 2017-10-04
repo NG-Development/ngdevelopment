@@ -59,9 +59,19 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.wireframe)
         self.wireframe.clicked.connect(self.handleButton)
 
-        
-       
+    def addModel(self, reader):
 
+        mapper = vtk.vtkPolyDataMapper()
+        if vtk.VTK_MAJOR_VERSION <= 5:
+            mapper.SetInput(reader.GetOutput())
+        else:
+            mapper.SetInputConnection(reader.GetOutputPort())
+
+            self.actor.SetMapper(mapper)
+            self.render.AddActor(self.actor)
+            self.render.ResetCamera()
+            self.interactor.Render()    
+              
     def handleButton(self):
         if self.solid == 1:
             self.actor.GetProperty().SetRepresentationToWireframe()
@@ -72,35 +82,35 @@ class UI(QtGui.QMainWindow):
             self.interactor.Render()
             self.solid = 1
 
-    #importing OBJ currently
+    #importing OBJ/STL currently
     def readfiles(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import Models")
-        #print filename
         file = open(filename, "r")
-        #self.render.RemoveActor(actor)
+        extension = QtCore.QFileInfo(filename).suffix()
         
-        with file:
+        if extension == 'obj':
             
-            reader = vtk.vtkOBJReader()
-            reader.SetFileName(str(filename))
-
-            mapper = vtk.vtkPolyDataMapper()
-            if vtk.VTK_MAJOR_VERSION <= 5:
-                mapper.SetInput(reader.GetOutput())
-            else:
-                mapper.SetInputConnection(reader.GetOutputPort())
-
-            self.actor.SetMapper(mapper)
-            self.render.AddActor(self.actor)
-            self.render.ResetCamera()
-            self.interactor.Render()
-
+            with file:
                 
+                reader = vtk.vtkOBJReader()
+                reader.SetFileName(str(filename))
+                self.addModel(reader)
+
+
+        if extension == 'stl':
+
+            with file:
+                
+                reader = vtk.vtkSTLReader()
+                reader.SetFileName(str(filename))
+                self.addModel(reader)
+
+
 
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
 
     window = UI()
-
-    sys.exit(app.exec_()) 
+    window.setWindowTitle('CEESIM Visualizer')
+    sys.exit(app.exec_())
