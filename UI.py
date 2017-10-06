@@ -6,6 +6,8 @@ from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 class UI(QtGui.QMainWindow):
     solid = 1
+    global points
+    points = {}
 
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
@@ -47,30 +49,32 @@ class UI(QtGui.QMainWindow):
         self.wireframe.clicked.connect(self.handleButton)
 
         # ids
-        self.ids = QtGui.QPushButton('Get Ids', self)
-        self.layout.addWidget(self.ids)
-        self.ids.clicked.connect(self.testmethod)
+        self.colorPlane = QtGui.QPushButton('Color Plane', self)
+        self.layout.addWidget(self.colorPlane)
+        self.colorPlane.clicked.connect(self.addColors)
 
         self.pd = vtk.vtkPolyData()
 
-    def testmethod(self):
-        test = vtk.vtkCellArray()
-        test = self.pd.GetPolys()
-
+    def addColors(self):
+        #Tuple at index (i) denotes the color of point(i)
         colors = vtk.vtkUnsignedCharArray()
         colors.SetNumberOfComponents(3)
-        colors.SetName("Colors")
 
-        for i in range(1, test.GetNumberOfCells()):
-            if i % 2 == 1:
-                colors.InsertNextTuple3(255, 0, 0)
+        #Goes through each point in the polydata and assigns a color based on some criteria
+        for i in range(1, self.pd.GetNumberOfPoints()+1):
+            if i%3 == 0:
+                colors.InsertNextTuple3(255,0,0)
+            elif i%3 == 1:
+                colors.InsertNextTuple3(0,255,0)
             else:
-                colors.InsertNextTuple3(255, 255, 255)
-        self.pd.GetCellData().AddArray(colors)
-        self.pd.GetCellData().SetActiveScalars("Colors")
+                colors.InsertNextTuple3(0,0,255)
+            #sets up dict to track point ids by their coordinates
+            points[self.pd.GetPoint(i)] = i
 
+        #required to show colors on the actor
+        self.pd.GetPointData().SetScalars(colors)
         self.mapper.SetColorModeToDefault()
-        self.mapper.SetScalarModeToUseCellData()
+        self.mapper.SetScalarModeToUsePointData()
         self.interactor.Render()
 
     def addModel(self, reader):
