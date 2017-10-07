@@ -6,8 +6,8 @@ from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 class UI(QtGui.QMainWindow):
     solid = 1
-    global points
-    points = {}
+    global antennas
+    antennas = []
 
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
@@ -30,6 +30,8 @@ class UI(QtGui.QMainWindow):
 
         self.render.AddActor(self.actor)
 
+
+
         self.render.ResetCamera()
 
         self.frame.setLayout(self.layout)
@@ -46,36 +48,7 @@ class UI(QtGui.QMainWindow):
         # Wireframe button
         self.wireframe = QtGui.QPushButton('Toggle Wireframe Mode', self)
         self.layout.addWidget(self.wireframe)
-        self.wireframe.clicked.connect(self.handleButton)
-
-        # ids
-        self.colorPlane = QtGui.QPushButton('Color Plane', self)
-        self.layout.addWidget(self.colorPlane)
-        self.colorPlane.clicked.connect(self.addColors)
-
-        self.pd = vtk.vtkPolyData()
-
-    def addColors(self):
-        #Tuple at index (i) denotes the color of point(i)
-        colors = vtk.vtkUnsignedCharArray()
-        colors.SetNumberOfComponents(3)
-
-        #Goes through each point in the polydata and assigns a color based on some criteria
-        for i in range(1, self.pd.GetNumberOfPoints()+1):
-            if i%3 == 0:
-                colors.InsertNextTuple3(255,0,0)
-            elif i%3 == 1:
-                colors.InsertNextTuple3(0,255,0)
-            else:
-                colors.InsertNextTuple3(0,0,255)
-            #sets up dict to track point ids by their coordinates
-            points[self.pd.GetPoint(i)] = i
-
-        #required to show colors on the actor
-        self.pd.GetPointData().SetScalars(colors)
-        self.mapper.SetColorModeToDefault()
-        self.mapper.SetScalarModeToUsePointData()
-        self.interactor.Render()
+        self.wireframe.clicked.connect(self.toggleWireframe)
 
     def addModel(self, reader):
 
@@ -86,12 +59,38 @@ class UI(QtGui.QMainWindow):
             self.mapper.SetInputConnection(reader.GetOutputPort())
 
             self.actor.SetMapper(self.mapper)
-            self.render.AddActor(self.actor)
-            self.pd = self.mapper.GetInput()
+            self.assembly = vtk.vtkAssembly()
+            self.assembly.AddPart(self.actor)
+            self.render.AddActor(self.assembly)
+            for antenna in antennas:
+                self.convertDimensions(antenna[0],antenna[1],antenna[2],antenna[3])
             self.render.ResetCamera()
             self.interactor.Render()
 
-    def handleButton(self):
+
+    def convertDimensions(self, ngx, ngy, ngz, ngo):
+        xmid = 226.6690063476525 / 2
+        ymid = 100.79100036621094 / 2
+        xmod = 22.7579323642
+        ymod = 20.6538935177
+        zmod = 20.957569867
+        x = xmid+(ngy*xmod)
+        y = ymid-13+(-ngz*ymod)
+        z = (ngx+15.09)*zmod
+        assembly = vtk.vtkAssembly()
+        assembly.AddPart(self.actor)
+        sphere = vtk.vtkSphereSource()
+        sphere.SetRadius(4)
+        sphereMapper = vtk.vtkPolyDataMapper()
+        sphereMapper.SetInputConnection(sphere.GetOutputPort())
+        sphereActor = vtk.vtkActor()
+        sphereActor.SetMapper(sphereMapper)
+        sphereActor.SetPosition(x,y,z)
+        sphereActor.GetProperty().SetColor(255, 0, 0)
+        self.assembly.AddPart(sphereActor)
+
+
+    def toggleWireframe(self):
         if self.solid == 1:
             self.actor.GetProperty().SetRepresentationToWireframe()
             self.interactor.Render()
