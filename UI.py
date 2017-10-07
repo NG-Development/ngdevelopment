@@ -1,13 +1,15 @@
 import sys
 import vtk
+import csv
+#import xlrd
 from PyQt4 import QtCore, QtGui
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 
 class UI(QtGui.QMainWindow):
     solid = 1
-    global antennas
-    antennas = []
+    #global antennas
+    #antennas = []
 
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
@@ -50,9 +52,47 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.wireframe)
         self.wireframe.clicked.connect(self.toggleWireframe)
 
-    def addModel(self, reader):
+        #Import Antennas
+        self.antennaImport = QtGui.QPushButton('Import Antennas From CSV', self)
+        self.layout.addWidget(self.antennaImport)
+        self.antennaImport.clicked.connect(self.importCSV)
 
-        self.mapper = vtk.vtkPolyDataMapper()
+    # read sample XLS sent
+    ##    def readXLS(self):
+    ##        fileXLS = xlrd.open_workbook('F16.xls')
+    ##        coordinates = fileXLS.sheet_by_index(0)
+    ##
+    ##        xyz = []
+    ##        #xyz =[] #list of xyz in each row
+    ##        coords = [] #list of all coordinates
+    ##        for i in range(0, 9):
+    ##            xyz.append([])
+    ##            for j in range(0, 3):
+    ##                xyz[i].append(coordinates.cell(i , j))
+    ##        print "coordinate list: ", xyz
+
+        # read and print CSV file
+    def readCSV(self, antennas):
+        xyz = []
+        with open(antennas, 'rb') as csvfile:
+            coordinates = csv.reader(csvfile, delimiter=',')
+            for row in coordinates:
+                # convert list of strings to float
+                row = map(float, row)
+                xyz.append(row)
+        global antennaLocs
+        antennaLocs = xyz
+        print(antennas)
+
+    # import CSV files for antenna coordinates
+    def importCSV(self):
+        filename = QtGui.QFileDialog.getOpenFileName(self, "Import CSV files")
+        file = open(filename, 'r')
+        self.readCSV(filename)
+
+    def addModel(self, reader):
+        print(antennaLocs)
+        self.maper = vtk.vtkPolyDataMapper()
         if vtk.VTK_MAJOR_VERSION <= 5:
             self.mapper.SetInput(reader.GetOutput())
         else:
@@ -62,7 +102,7 @@ class UI(QtGui.QMainWindow):
             self.assembly = vtk.vtkAssembly()
             self.assembly.AddPart(self.actor)
             self.render.AddActor(self.assembly)
-            for antenna in antennas:
+            for antenna in antennaLocs:
                 self.convertDimensions(antenna[0],antenna[1],antenna[2],antenna[3])
             self.render.ResetCamera()
             self.interactor.Render()
@@ -74,13 +114,16 @@ class UI(QtGui.QMainWindow):
         xmod = 22.7579323642
         ymod = 20.6538935177
         zmod = 20.957569867
-        x = xmid+(ngy*xmod)
+        x = xmid+(ngy*zmod)
         y = ymid-13+(-ngz*ymod)
-        z = (ngx+15.09)*zmod
+        if -9.0 < ngx < -6.5:
+            z = (ngx+13.8)*zmod
+        else:
+            z = (ngx+15.09)*zmod
         assembly = vtk.vtkAssembly()
         assembly.AddPart(self.actor)
         sphere = vtk.vtkSphereSource()
-        sphere.SetRadius(4)
+        sphere.SetRadius(3)
         sphereMapper = vtk.vtkPolyDataMapper()
         sphereMapper.SetInputConnection(sphere.GetOutputPort())
         sphereActor = vtk.vtkActor()
