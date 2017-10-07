@@ -8,6 +8,7 @@ from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 class UI(QtGui.QMainWindow):
     solid = 1
+    showANT = 1
     #global antennas
     #antennas = []
 
@@ -31,9 +32,6 @@ class UI(QtGui.QMainWindow):
         self.actor.SetMapper(self.mapper)
 
         self.render.AddActor(self.actor)
-
-
-
         self.render.ResetCamera()
 
         self.frame.setLayout(self.layout)
@@ -57,21 +55,26 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.antennaImport)
         self.antennaImport.clicked.connect(self.importCSV)
 
-    # read sample XLS sent
-    ##    def readXLS(self):
-    ##        fileXLS = xlrd.open_workbook('F16.xls')
-    ##        coordinates = fileXLS.sheet_by_index(0)
-    ##
-    ##        xyz = []
-    ##        #xyz =[] #list of xyz in each row
-    ##        coords = [] #list of all coordinates
-    ##        for i in range(0, 9):
-    ##            xyz.append([])
-    ##            for j in range(0, 3):
-    ##                xyz[i].append(coordinates.cell(i , j))
-    ##        print "coordinate list: ", xyz
+        #Show Antennas
+        self.antenna = QtGui.QPushButton('Toggle Antennas', self)
+        self.layout.addWidget(self.antenna)
+        self.antenna.clicked.connect(self.showAntenna)
 
-        # read and print CSV file
+# read sample XLS sent
+##    def readXLS(self):
+##        fileXLS = xlrd.open_workbook('F16.xls')
+##        coordinates = fileXLS.sheet_by_index(0)
+##
+##        xyz = []
+##        #xyz =[] #list of xyz in each row
+##        coords = [] #list of all coordinates
+##        for i in range(0, 9):
+##            xyz.append([])
+##            for j in range(0, 3):
+##                xyz[i].append(coordinates.cell(i , j))
+##        print "coordinate list: ", xyz
+
+    # read and print CSV file
     def readCSV(self, antennas):
         xyz = []
         with open(antennas, 'rb') as csvfile:
@@ -91,35 +94,31 @@ class UI(QtGui.QMainWindow):
         self.readCSV(filename)
 
     def addModel(self, reader):
-        print(antennaLocs)
         self.maper = vtk.vtkPolyDataMapper()
         if vtk.VTK_MAJOR_VERSION <= 5:
             self.mapper.SetInput(reader.GetOutput())
         else:
             self.mapper.SetInputConnection(reader.GetOutputPort())
-
             self.actor.SetMapper(self.mapper)
-            self.assembly = vtk.vtkAssembly()
-            self.assembly.AddPart(self.actor)
-            self.render.AddActor(self.assembly)
-            for antenna in antennaLocs:
-                self.convertDimensions(antenna[0],antenna[1],antenna[2],antenna[3])
             self.render.ResetCamera()
             self.interactor.Render()
-
-
+    
     def convertDimensions(self, ngx, ngy, ngz, ngo):
         xmid = 226.6690063476525 / 2
         ymid = 100.79100036621094 / 2
+
         xmod = 22.7579323642
         ymod = 20.6538935177
         zmod = 20.957569867
+
         x = xmid+(ngy*zmod)
         y = ymid-13+(-ngz*ymod)
+
         if -9.0 < ngx < -6.5:
             z = (ngx+13.8)*zmod
         else:
             z = (ngx+15.09)*zmod
+
         assembly = vtk.vtkAssembly()
         assembly.AddPart(self.actor)
         sphere = vtk.vtkSphereSource()
@@ -131,8 +130,25 @@ class UI(QtGui.QMainWindow):
         sphereActor.SetPosition(x,y,z)
         sphereActor.GetProperty().SetColor(255, 0, 0)
         self.assembly.AddPart(sphereActor)
-
-
+        
+    # Show Antenna on model, toggle off will remove entire model
+    def showAntenna(self):
+        print (antennaLocs)
+        if self.showANT == 1:
+            self.assembly = vtk.vtkAssembly()
+            self.assembly.AddPart(self.actor)
+            self.render.AddActor(self.assembly)
+            for antenna in antennaLocs:
+                self.convertDimensions(antenna[0],antenna[1],antenna[2],antenna[3])
+            self.render.ResetCamera()
+            self.interactor.Render()
+            self.showANT = 0
+        else:
+            self.render.RemoveAllViewProps()
+            self.render.ResetCamera()
+            self.interactor.Render()
+            self.showANT = 1
+        
     def toggleWireframe(self):
         if self.solid == 1:
             self.actor.GetProperty().SetRepresentationToWireframe()
@@ -143,7 +159,7 @@ class UI(QtGui.QMainWindow):
             self.interactor.Render()
             self.solid = 1
 
-    # importing OBJ/STL currently
+    # importing OBJ/STL/PLY currently
     def readfiles(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import Models")
         file = open(filename, "r")
@@ -161,10 +177,15 @@ class UI(QtGui.QMainWindow):
                 reader.SetFileName(str(filename))
                 self.addModel(reader)
 
+        if extension == 'ply':
+            with file:
+                reader = vtk.vtkPLYReader()
+                reader.SetFileName(str(filename))
+                self.addModel(reader)
+
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
-
     window = UI()
     window.setWindowTitle('CEESIM Visualizer')
     sys.exit(app.exec_())
