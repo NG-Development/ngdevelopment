@@ -1,9 +1,7 @@
 # NGDevelopment
-------
 2D and 3D visualizations of static models
 
 ## Running our MVP for release v0.2.0
-------
 
  1. Download and extract **Source code (zip)** under release v0.2.0
 
