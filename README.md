@@ -1,16 +1,14 @@
-# ngdevelopment
+# NGDevelopment
 2D and 3D visualizations of static models
 
-# Setup and run the Prototype
+## Running our MVP for release v0.2.0
 
-Download the UI.zip file under the release section:
+ 1. Download and extract **Source code (zip)** under release v0.2.0
+
+ 2. Extract the file anywhere you'd like. 
  
- 1. Install Python 3.6.2 or later
+ 3. Inside the downloaded file locate **UI.zip** and extract it to your desktop.
  
- 2. Extract the UI.zip anywhere you'd like
- 
- 3. Open the UI folder once it is unzipped.
- 
- 4. Look for the file labeled UI.exe
+ 4. Open up the extracted **UI** folder and locate **UI.exe**
  
  5. Double click on it and the application will pop up.

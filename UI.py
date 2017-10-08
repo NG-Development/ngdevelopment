@@ -9,8 +9,7 @@ from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 class UI(QtGui.QMainWindow):
     solid = 1
     showANT = 1
-    #global antennas
-    #antennas = []
+    assemblyMade = False
 
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
@@ -56,9 +55,9 @@ class UI(QtGui.QMainWindow):
         self.antennaImport.clicked.connect(self.importCSV)
 
         #Show Antennas
-        self.antenna = QtGui.QPushButton('Toggle Antennas', self)
-        self.layout.addWidget(self.antenna)
-        self.antenna.clicked.connect(self.showAntenna)
+        #self.antenna = QtGui.QPushButton('Toggle Antennas', self)
+        #self.layout.addWidget(self.antenna)
+        #self.antenna.clicked.connect(self.showAntenna)
 
 # read sample XLS sent
 ##    def readXLS(self):
@@ -85,7 +84,11 @@ class UI(QtGui.QMainWindow):
                 xyz.append(row)
         global antennaLocs
         antennaLocs = xyz
-        print(antennas)
+        if (not self.assemblyMade):
+            self.assembly = vtk.vtkAssembly()
+            self.assemblyMade = True
+        for antenna in antennaLocs:
+            self.convertDimensions(antenna[0],antenna[1],antenna[2],antenna[3])
 
     # import CSV files for antenna coordinates
     def importCSV(self):
@@ -99,7 +102,12 @@ class UI(QtGui.QMainWindow):
             self.mapper.SetInput(reader.GetOutput())
         else:
             self.mapper.SetInputConnection(reader.GetOutputPort())
-            self.actor.SetMapper(self.mapper)
+            if (not self.assemblyMade):
+                self.assembly = vtk.vtkAssembly()
+                self.assemblyMade = True
+            self.assembly = vtk.vtkAssembly()
+            self.assembly.AddPart(self.actor)
+            self.render.AddActor(self.assembly)
             self.render.ResetCamera()
             self.interactor.Render()
     
@@ -132,22 +140,22 @@ class UI(QtGui.QMainWindow):
         self.assembly.AddPart(sphereActor)
         
     # Show Antenna on model, toggle off will remove entire model
-    def showAntenna(self):
-        print (antennaLocs)
-        if self.showANT == 1:
-            self.assembly = vtk.vtkAssembly()
-            self.assembly.AddPart(self.actor)
-            self.render.AddActor(self.assembly)
-            for antenna in antennaLocs:
-                self.convertDimensions(antenna[0],antenna[1],antenna[2],antenna[3])
-            self.render.ResetCamera()
-            self.interactor.Render()
-            self.showANT = 0
-        else:
-            self.render.RemoveAllViewProps()
-            self.render.ResetCamera()
-            self.interactor.Render()
-            self.showANT = 1
+    #def showAntenna(self):
+    #    print (antennaLocs)
+    #    if self.showANT == 1:
+    #        self.assembly = vtk.vtkAssembly()
+    #        self.assembly.AddPart(self.actor)
+    #        self.render.AddActor(self.assembly)
+    #        for antenna in antennaLocs:
+    #            self.convertDimensions(antenna[0],antenna[1],antenna[2],antenna[3])
+    #        self.render.ResetCamera()
+    #        self.interactor.Render()
+    #        self.showANT = 0
+    #    else:
+    #        self.render.RemoveAllViewProps()
+    #        self.render.ResetCamera()
+    #        self.interactor.Render()
+    #        self.showANT = 1
         
     def toggleWireframe(self):
         if self.solid == 1:
