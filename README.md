@@ -3,6 +3,8 @@
 
 ## Running our MVP for release v0.2.0
 
+### Support for Windows users only
+
  1. Download and extract **Source code (zip)** under release v0.2.0
 
  2. Extract the file anywhere you'd like. 
