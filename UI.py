@@ -102,12 +102,13 @@ class UI(QtGui.QMainWindow):
         for antenna in antennaLocs:
             self.convertDimensions(antenna[0],antenna[1],antenna[2],antenna[3])
 
-    # import CSV files for antenna coordinates
+    #import CSV files for antenna coordinates
     def importCSV(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import CSV files")
         file = open(filename, 'r')
         self.readCSV(filename)
-
+        
+    #adds models to the renderer
     def addModel(self, reader):
         self.maper = vtk.vtkPolyDataMapper()
         if vtk.VTK_MAJOR_VERSION <= 5:
@@ -222,7 +223,8 @@ class UI(QtGui.QMainWindow):
     #        self.render.ResetCamera()
     #        self.interactor.Render()
     #        self.showANT = 1
-        
+
+    #wireframe function
     def toggleWireframe(self):
         if self.solid == 1:
             self.actor.GetProperty().SetRepresentationToWireframe()
@@ -233,12 +235,14 @@ class UI(QtGui.QMainWindow):
             self.interactor.Render()
             self.solid = 1
 
-    # importing OBJ/STL/PLY currently
+    #importing OBJ/STL/PLY currently
     def readfiles(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import Models")
         file = open(filename, "r")
         extension = QtCore.QFileInfo(filename).suffix()
 
+        #create an obj, stl, ply reader based on the extension of the filename selected
+        #we add the selected 3D model to our renderer
         if extension == 'obj':
             with file:
                 reader = vtk.vtkOBJReader()
@@ -258,6 +262,7 @@ class UI(QtGui.QMainWindow):
                 self.addModel(reader)
 
 
+#this creates the window and all the renderers
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = UI()
