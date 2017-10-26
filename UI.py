@@ -66,6 +66,24 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.antennaImport)
         self.antennaImport.clicked.connect(self.importCSV)
 
+        #x, y, and z text fields for user to enter coordinates
+        self.xInput = QtGui.QLineEdit()
+        self.yInput = QtGui.QLineEdit()
+        self.zInput = QtGui.QLineEdit()
+        self.layout.addWidget(self.xInput)
+        self.layout.addWidget(self.yInput)
+        self.layout.addWidget(self.zInput)
+
+        #Enter Antennas, used to enter the x, y, and z coordinates for an antenna
+        self.addAntenna = QtGui.QPushButton('Enter Antenna Coordinates', self)
+        self.layout.addWidget(self.addAntenna)
+        self.addAntenna.clicked.connect(self.enterAntennaCoordinates)
+
+        #Toggle Antennas, used to Show/Hide antennas, not currently implemented
+        #self.antenna = QtGui.QPushButton('Toggle Antennas', self)
+        #self.layout.addWidget(self.antenna)
+        #self.antenna.clicked.connect(self.showAntenna)
+
         # Toggle Antennas, used to Show/Hide antennas, not currently implemented
         self.antenna = QtGui.QPushButton('Toggle Antennas', self)
         self.layout.addWidget(self.antenna)
@@ -109,6 +127,13 @@ class UI(QtGui.QMainWindow):
         file = open(filename, 'r')
         self.readCSV(filename)
 
+    #user enters x, y, and z antenna coordinates
+    def enterAntennaCoordinates(self):
+        x = self.xInput.text()
+        y = self.yInput.text()
+        z = self.zInput.text()
+        self.convertDimensions(float(x), float(y), float(z), 0)
+        
     # adds models to the renderer
     def addModel(self, reader):
         self.maper = vtk.vtkPolyDataMapper()
