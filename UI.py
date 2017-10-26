@@ -65,6 +65,7 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.antennaImport)
         self.antennaImport.clicked.connect(self.importCSV)
 
+        #x, y, and z text fields for user to enter coordinates
         self.xInput = QtGui.QLineEdit()
         self.yInput = QtGui.QLineEdit()
         self.zInput = QtGui.QLineEdit()
