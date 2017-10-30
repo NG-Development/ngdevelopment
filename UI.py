@@ -65,6 +65,11 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.antennaImport)
         self.antennaImport.clicked.connect(self.importCSV)
 
+        #Display Antenna cordinates
+        self.showCoordinates = QtGui.QPushButton('Display Antennas Coordinates', self)
+        self.layout.addWidget(self.antennaPosition)
+        self.antennaPosition.clicked.connect(self.outputCoordinates)
+
         #Toggle Antennas, used to Show/Hide antennas, not currently implemented
         #self.antenna = QtGui.QPushButton('Toggle Antennas', self)
         #self.layout.addWidget(self.antenna)
@@ -84,6 +89,10 @@ class UI(QtGui.QMainWindow):
 ##            for j in range(0, 3):
 ##                xyz[i].append(coordinates.cell(i , j))
 ##        print "coordinate list: ", xyz
+
+    #Outputs the coordinates of all of the antennas
+    def outputCoordinates(self):
+        print antennaLocs
 
     # read and print CSV file
     def readCSV(self, antennas):
