@@ -1,5 +1,3 @@
-I've added some text here for the activity.
-
 # NGDevelopment
 2D and 3D visualizations of static models
 
