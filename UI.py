@@ -5,7 +5,6 @@ import csv
 from PyQt4 import QtCore, QtGui
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-
 class UI(QtGui.QMainWindow):
     solid = 1
     #Used to toggle between wireframe and solid mode
@@ -20,6 +19,9 @@ class UI(QtGui.QMainWindow):
         #Holds all active antennas with keys being a tuple of an antenna's coordinates
         self.antennas = {}
 
+        #global antennaLocs
+        #antennaLocs = []
+        
         #Create Gui Frame
         self.frame = QtGui.QFrame()
 
@@ -67,8 +69,8 @@ class UI(QtGui.QMainWindow):
 
         #Display Antenna cordinates
         self.showCoordinates = QtGui.QPushButton('Display Antennas Coordinates', self)
-        self.layout.addWidget(self.antennaPosition)
-        self.antennaPosition.clicked.connect(self.outputCoordinates)
+        self.layout.addWidget(self.showCoordinates)
+        self.showCoordinates.clicked.connect(self.outputCoordinates)
 
         #Toggle Antennas, used to Show/Hide antennas, not currently implemented
         #self.antenna = QtGui.QPushButton('Toggle Antennas', self)
@@ -88,11 +90,7 @@ class UI(QtGui.QMainWindow):
 ##            xyz.append([])
 ##            for j in range(0, 3):
 ##                xyz[i].append(coordinates.cell(i , j))
-##        print "coordinate list: ", xyz
-
-    #Outputs the coordinates of all of the antennas
-    def outputCoordinates(self):
-        print antennaLocs
+##        print "coordinate list: ", xyz      
 
     # read and print CSV file
     def readCSV(self, antennas):
@@ -103,7 +101,6 @@ class UI(QtGui.QMainWindow):
                 # convert list of strings to float
                 row = map(float, row)
                 xyz.append(row)
-        global antennaLocs
         antennaLocs = xyz
         if (not self.assemblyMade):
             self.assembly = vtk.vtkAssembly()
@@ -111,6 +108,20 @@ class UI(QtGui.QMainWindow):
         for antenna in antennaLocs:
             self.convertDimensions(antenna[0],antenna[1],antenna[2],antenna[3])
 
+
+    #Outputs the coordinates of all of the antennas
+    def outputCoordinates(self):        
+        for antenna in self.antennas:                   
+            textActor = vtk.vtkTextActor3D()
+            textActor.SetInput("")
+            textActor.SetPosition(antenna[0],antenna[1],antenna[2])
+            label = (str(round(antenna[0],3))+", "+str(round(antenna[1],3))+", "+str(round(antenna[2],3)))
+            textActor.SetInput(label)
+            textActor.GetTextProperty().SetFontSize(12)
+            textActor.GetTextProperty().SetColor(1.0,1.0,4)
+            textActor.GetTextProperty().SetJustificationToCentered()
+            self.render.AddActor(textActor)     
+        
     #import CSV files for antenna coordinates
     def importCSV(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import CSV files")
