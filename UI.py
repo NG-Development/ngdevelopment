@@ -53,8 +53,27 @@ class UI(QtGui.QMainWindow):
 
         # Initialize menu bar
         menuBar = self.menuBar()
-        #fileMenu = menuBar.addMenu('&File')
+        self.setStyleSheet("""
+            QMenuBar {
+                background-color: rgb(240,240,240);
+            }
 
+            QMenuBar::item {
+                spacing: 3px; /* spacing between menu bar items */
+                padding: 1px 4px;
+                background: transparent;
+                border-radius: 4px;
+            }
+
+            QMenuBar::item:selected { /* when selected using mouse or keyboard */
+                background: #a8a8a8;
+            }
+
+            QMenuBar::item:pressed {
+                background: #888888;
+            }
+        """)
+        
         # Import button, used to import plane models from various 3D filetypes
         importAction = QtGui.QAction('Import Plane Model', self)        
         importAction.triggered.connect(self.readfiles)
