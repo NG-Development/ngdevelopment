@@ -5,7 +5,6 @@ import csv
 from PyQt4 import QtCore, QtGui
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-
 class UI(QtGui.QMainWindow):
     solid = 1
     # Used to toggle between wireframe and solid mode
@@ -21,7 +20,11 @@ class UI(QtGui.QMainWindow):
         # Holds all active antennas with keys being a tuple of an antenna's coordinates
         self.antennas = {}
 
-        # Create Gui Frame
+
+        #global antennaLocs
+        #antennaLocs = []
+        
+
         self.frame = QtGui.QFrame()
 
         # Create and add VTK render window to QT for display of VTK objects
@@ -66,6 +69,12 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.antennaImport)
         self.antennaImport.clicked.connect(self.importCSV)
 
+
+        #Display Antenna cordinates
+        self.showCoordinates = QtGui.QPushButton('Display Antennas Coordinates', self)
+        self.layout.addWidget(self.showCoordinates)
+        self.showCoordinates.clicked.connect(self.outputCoordinates)
+
         #x, y, and z text fields for user to enter coordinates
         self.xInput = QtGui.QLineEdit()
         self.yInput = QtGui.QLineEdit()
@@ -79,10 +88,27 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.addAntenna)
         self.addAntenna.clicked.connect(self.enterAntennaCoordinates)
 
+
         #Toggle Antennas, used to Show/Hide antennas, not currently implemented
         #self.antenna = QtGui.QPushButton('Toggle Antennas', self)
         #self.layout.addWidget(self.antenna)
         #self.antenna.clicked.connect(self.showAntenna)
+
+
+#Currently using CSV in place of XLS
+# read sample XLS sent
+##    def readXLS(self):
+##        fileXLS = xlrd.open_workbook('F16.xls')
+##        coordinates = fileXLS.sheet_by_index(0)
+##
+##        xyz = []
+##        #xyz =[] #list of xyz in each row
+##        coords = [] #list of all coordinates
+##        for i in range(0, 9):
+##            xyz.append([])
+##            for j in range(0, 3):
+##                xyz[i].append(coordinates.cell(i , j))
+##        print "coordinate list: ", xyz      
 
         # Toggle Antennas, used to Show/Hide antennas, not currently implemented
         self.antenna = QtGui.QPushButton('Toggle Antennas', self)
@@ -113,7 +139,6 @@ class UI(QtGui.QMainWindow):
                 # convert list of strings to float
                 row = map(float, row)
                 xyz.append(row)
-        global antennaLocs
         antennaLocs = xyz
         if (not self.assemblyMade):
             self.assembly = vtk.vtkAssembly()
@@ -121,7 +146,21 @@ class UI(QtGui.QMainWindow):
         for antenna in antennaLocs:
             self.convertDimensions(antenna[0], antenna[1], antenna[2], antenna[3])
 
-    # import CSV files for antenna coordinates
+    #Outputs the coordinates of all of the antennas
+    def outputCoordinates(self):        
+        for antenna in self.antennas:                   
+            textActor = vtk.vtkTextActor3D()
+            textActor.SetInput("")
+            textActor.SetPosition(antenna[0],antenna[1],antenna[2])
+            label = (str(round(antenna[0],3))+", "+str(round(antenna[1],3))+", "+str(round(antenna[2],3)))
+            textActor.SetInput(label)
+            textActor.GetTextProperty().SetFontSize(12)
+            textActor.GetTextProperty().SetColor(1.0,1.0,4)
+            textActor.GetTextProperty().SetJustificationToCentered()
+            self.render.AddActor(textActor)     
+        
+        
+    #import CSV files for antenna coordinates
     def importCSV(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import CSV files")
         file = open(filename, 'r')
