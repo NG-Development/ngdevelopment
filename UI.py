@@ -7,13 +7,20 @@ from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 
 class UI(QtGui.QMainWindow):
-    solid = 1
+
     # Used to toggle between wireframe and solid mode
+    solid = 1
+
+    # Used to show/hide antennas
     showANT = 0
-    # Used to show an hide antennas
-    assemblyMade = False
+
+    # Used to toggle antenna coordinates
+    showCoord = 0
 
     # denotes if the assembly has been made yet
+    assemblyMade = False
+
+    
 
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
@@ -50,7 +57,9 @@ class UI(QtGui.QMainWindow):
 
         self.show()
         self.interactor.Initialize()
-
+        
+        # <-------------BUTTONS------------->
+        
         # Import button, used to import plane models from various 3D filetypes
         self.planes = QtGui.QPushButton('Import Plane Model', self)
         self.layout.addWidget(self.planes)
@@ -66,28 +75,22 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.antennaImport)
         self.antennaImport.clicked.connect(self.importCSV)
 
-        #x, y, and z text fields for user to enter coordinates
-        self.xInput = QtGui.QLineEdit()
-        self.yInput = QtGui.QLineEdit()
-        self.zInput = QtGui.QLineEdit()
-        self.layout.addWidget(self.xInput)
-        self.layout.addWidget(self.yInput)
-        self.layout.addWidget(self.zInput)
+        # Toggle Antennas, used to Show/Hide antennas
+        self.antenna = QtGui.QPushButton('Toggle Antennas', self)
+        self.layout.addWidget(self.antenna)
+        self.antenna.clicked.connect(self.showAntenna)
 
-        #Enter Antennas, used to enter the x, y, and z coordinates for an antenna
+        # User input of Antenna Coordinates
         self.addAntenna = QtGui.QPushButton('Enter Antenna Coordinates', self)
         self.layout.addWidget(self.addAntenna)
         self.addAntenna.clicked.connect(self.enterAntennaCoordinates)
 
-        #Toggle Antennas, used to Show/Hide antennas, not currently implemented
-        #self.antenna = QtGui.QPushButton('Toggle Antennas', self)
-        #self.layout.addWidget(self.antenna)
-        #self.antenna.clicked.connect(self.showAntenna)
+        # Display Antenna Coordinates
+        self.showCoords = QtGui.QPushButton('Display Antenna Coordinates', self)
+        self.layout.addWidget(self.showCoords)
+        self.showCoords.clicked.connect(self.showCoordinates)
 
-        # Toggle Antennas, used to Show/Hide antennas, not currently implemented
-        self.antenna = QtGui.QPushButton('Toggle Antennas', self)
-        self.layout.addWidget(self.antenna)
-        self.antenna.clicked.connect(self.showAntenna)
+        # <--------------------------------->
 
     # Currently using CSV in place of XLS
     # read sample XLS sent
@@ -104,6 +107,8 @@ class UI(QtGui.QMainWindow):
     ##                xyz[i].append(coordinates.cell(i , j))
     ##        print "coordinate list: ", xyz
 
+
+        
     # read and print CSV file
     def readCSV(self, antennas):
         xyz = []
@@ -113,7 +118,6 @@ class UI(QtGui.QMainWindow):
                 # convert list of strings to float
                 row = map(float, row)
                 xyz.append(row)
-        global antennaLocs
         antennaLocs = xyz
         if (not self.assemblyMade):
             self.assembly = vtk.vtkAssembly()
@@ -121,18 +125,35 @@ class UI(QtGui.QMainWindow):
         for antenna in antennaLocs:
             self.convertDimensions(antenna[0], antenna[1], antenna[2], antenna[3])
 
+    def showCoordinates(self):
+        for antenna in self.antennas:
+            text = vtk.vtkTextActor3D()
+            text.SetInput("")
+            text.SetPosition(antenna[0], antenna[1], antenna[2])
+            label = (str(round(antenna[0],3))+", "+str(round(antenna[1],3))+", "+str(round(antenna[2],3)))
+            text.SetInput(label)
+            text.GetTextProperty().SetFontSize(10)
+            text.GetTextProperty().SetColor(1.0, 1.0, 4)
+            text.GetTextProperty().SetJustificationToCentered()
+            self.render.AddActor(text)
+            self.interactor.Render()
+    
     # import CSV files for antenna coordinates
     def importCSV(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import CSV files")
         file = open(filename, 'r')
         self.readCSV(filename)
 
-    #user enters x, y, and z antenna coordinates
+        #refresh the renderer
+        self.interactor.Render()
+     
+    # user input of antenna coordinates
     def enterAntennaCoordinates(self):
-        x = self.xInput.text()
-        y = self.yInput.text()
-        z = self.zInput.text()
-        self.convertDimensions(float(x), float(y), float(z), 0)
+        xcoord, xinput = QtGui.QInputDialog.getText(self, 'Enter your coordinates', 'Enter x coordinates (meters): ')
+        ycoord, yinput = QtGui.QInputDialog.getText(self, 'Enter your coordinates', 'Enter y coordinates (meters): ')
+        zcoord, zinput = QtGui.QInputDialog.getText(self, 'Enter your coordinates', 'Enter z coordinates (meters): ')
+        if xinput == True and yinput == True and zinput == True:
+            self.convertDimensions(float(xcoord), float(ycoord), float(zcoord), 0)
         
     # adds models to the renderer
     def addModel(self, reader):
@@ -228,11 +249,16 @@ class UI(QtGui.QMainWindow):
         sphereActor.SetPosition(x, y, z)
         sphereActor.GetProperty().SetColor(255, 0, 0)
         self.assembly.AddPart(sphereActor)
-        self.antennas[(ngx, ngy, ngz)] = sphereActor
+
+        #changed for Display coordinates to work
+        self.antennas[(x, y, z)] = sphereActor
+        
         # Tolerance will have to be changed, currently you need to exact location, the the decimal
         # in order to locate an antenna
 
-    # Show Antenna on model, currently not implemented
+
+    # <-------------BUTTON TOGGLES------------->    
+    # Show Antenna on model
     def showAntenna(self):
         if self.showANT == 1:
             # antennas should be shown, add all from dictionary to assembly
@@ -260,6 +286,10 @@ class UI(QtGui.QMainWindow):
             self.interactor.Render()
             self.solid = 1
 
+
+            
+    # <---------------------------------------->
+    
     # importing OBJ/STL/PLY currently
     def readfiles(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import Models")
