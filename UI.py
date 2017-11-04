@@ -51,20 +51,40 @@ class UI(QtGui.QMainWindow):
         self.show()
         self.interactor.Initialize()
 
-        # Import button, used to import plane models from various 3D filetypes
-        self.planes = QtGui.QPushButton('Import Plane Model', self)
-        self.layout.addWidget(self.planes)
-        self.planes.clicked.connect(self.readfiles)
+        # Initialize menu bar
+        menuBar = self.menuBar()
+        self.setStyleSheet("""
+            QMenuBar {
+                background-color: rgb(240,240,240);
+            }
 
+            QMenuBar::item {
+                spacing: 3px; /* spacing between menu bar items */
+                padding: 1px 4px;
+                background: transparent;
+                border-radius: 4px;
+            }
+
+            QMenuBar::item:selected { /* when selected using mouse or keyboard */
+                background: #a8a8a8;
+            }
+
+            QMenuBar::item:pressed {
+                background: #888888;
+            }
+        """)
+        
+        # Import button, used to import plane models from various 3D filetypes
+        importAction = QtGui.QAction('Import Plane Model', self)        
+        importAction.triggered.connect(self.readfiles)
+        
         # Wireframe button, used to toggle between solid and wireframe mode
-        self.wireframe = QtGui.QPushButton('Toggle Wireframe Mode', self)
-        self.layout.addWidget(self.wireframe)
-        self.wireframe.clicked.connect(self.toggleWireframe)
+        wireframeAction = QtGui.QAction('Toggle Wireframe Mode', self)
+        wireframeAction.triggered.connect(self.toggleWireframe)
 
         # Import Antennas, used to import antennas from a csv
-        self.antennaImport = QtGui.QPushButton('Import Antennas From CSV', self)
-        self.layout.addWidget(self.antennaImport)
-        self.antennaImport.clicked.connect(self.importCSV)
+        antennaImport = QtGui.QAction('Import Antennas From CSV', self)
+        antennaImport.triggered.connect(self.importCSV)
 
         #x, y, and z text fields for user to enter coordinates
         self.xInput = QtGui.QLineEdit()
@@ -75,19 +95,19 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.zInput)
 
         #Enter Antennas, used to enter the x, y, and z coordinates for an antenna
-        self.addAntenna = QtGui.QPushButton('Enter Antenna Coordinates', self)
-        self.layout.addWidget(self.addAntenna)
-        self.addAntenna.clicked.connect(self.enterAntennaCoordinates)
+        addAntenna = QtGui.QAction('Enter Antenna Coordinates', self)
+        addAntenna.triggered.connect(self.enterAntennaCoordinates)
 
-        #Toggle Antennas, used to Show/Hide antennas, not currently implemented
-        #self.antenna = QtGui.QPushButton('Toggle Antennas', self)
-        #self.layout.addWidget(self.antenna)
-        #self.antenna.clicked.connect(self.showAntenna)
+        # Toggle Antennas, used to Show/Hide antennas
+        antenna = QtGui.QAction('Toggle Antennas', self)
+        antenna.triggered.connect(self.showAntenna)
 
-        # Toggle Antennas, used to Show/Hide antennas, not currently implemented
-        self.antenna = QtGui.QPushButton('Toggle Antennas', self)
-        self.layout.addWidget(self.antenna)
-        self.antenna.clicked.connect(self.showAntenna)
+        # Add actions to menubar
+        menuBar.addAction(importAction)
+        menuBar.addAction(wireframeAction)
+        menuBar.addAction(antennaImport)
+        menuBar.addAction(addAntenna)
+        menuBar.addAction(antenna)
 
     # Currently using CSV in place of XLS
     # read sample XLS sent
