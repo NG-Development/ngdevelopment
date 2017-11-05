@@ -60,30 +60,44 @@ class UI(QtGui.QMainWindow):
         
         # <-------------BUTTONS------------->
         
+##        self.planes = QtGui.QPushButton('Import Plane Model', self)
+##        self.layout.addWidget(self.planes)
+##        self.planes.clicked.connect(self.readfiles)
+        
         # Import button, used to import plane models from various 3D filetypes
-        self.planes = QtGui.QPushButton('Import Plane Model', self)
-        self.layout.addWidget(self.planes)
-        self.planes.clicked.connect(self.readfiles)
+        ImportActionPlanes = QtGui.QAction("&Import Plane Model", self)
+        ImportActionPlanes.setStatusTip("Import Plane")
+        ImportActionPlanes.triggered.connect(self.readfiles)
 
         # Wireframe button, used to toggle between solid and wireframe mode
-        self.wireframe = QtGui.QPushButton('Toggle Wireframe Mode', self)
+        self.wireframe = QtGui.QPushButton('Toggle Wireframe', self)
         self.layout.addWidget(self.wireframe)
         self.wireframe.clicked.connect(self.toggleWireframe)
 
         # Import Antennas, used to import antennas from a csv
-        self.antennaImport = QtGui.QPushButton('Import Antennas From CSV', self)
-        self.layout.addWidget(self.antennaImport)
-        self.antennaImport.clicked.connect(self.importCSV)
+##        self.antennaImport = QtGui.QPushButton('Import Antennas From CSV', self)
+##        self.layout.addWidget(self.antennaImport)
+##        self.antennaImport.clicked.connect(self.importCSV)
+        
+        # Import Antennas, used to import antennas from a csv
+        ImportActionAntennas = QtGui.QAction("&Import Antennas", self)
+        ImportActionAntennas.setStatusTip("Import Antennas")
+        ImportActionAntennas.triggered.connect(self.importCSV)
 
         # Toggle Antennas, used to Show/Hide antennas
         self.antenna = QtGui.QPushButton('Toggle Antennas', self)
         self.layout.addWidget(self.antenna)
         self.antenna.clicked.connect(self.showAntenna)
 
+        
+##        self.addAntenna = QtGui.QPushButton('Enter Antenna Coordinates', self)
+##        self.layout.addWidget(self.addAntenna)
+##        self.addAntenna.clicked.connect(self.enterAntennaCoordinates)
+        
         # User input of Antenna Coordinates
-        self.addAntenna = QtGui.QPushButton('Enter Antenna Coordinates', self)
-        self.layout.addWidget(self.addAntenna)
-        self.addAntenna.clicked.connect(self.enterAntennaCoordinates)
+        AntennaCoordinates = QtGui.QAction("&Antenna Coordinates", self)
+        AntennaCoordinates.setStatusTip("Input Antenna Coordinates")
+        AntennaCoordinates.triggered.connect(self.enterAntennaCoordinates)
 
         # Display Antenna Coordinates
         self.showCoords = QtGui.QPushButton('Display Antenna Coordinates', self)
@@ -92,6 +106,16 @@ class UI(QtGui.QMainWindow):
 
         # <--------------------------------->
 
+        # <------------Menu Bar------------>
+
+        mainMenu = self.menuBar()
+        fileMenu = mainMenu.addMenu('&File')
+        fileMenu.addAction(ImportActionPlanes)
+        fileMenu.addAction(ImportActionAntennas)
+        fileMenu = mainMenu.addMenu('&Add Antenna')
+        fileMenu.addAction(AntennaCoordinates)
+
+        # <-------------------------------->
     # Currently using CSV in place of XLS
     # read sample XLS sent
     ##    def readXLS(self):
