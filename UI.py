@@ -109,7 +109,7 @@ class UI(QtGui.QMainWindow):
         # <------------Menu Bar------------>
 
         mainMenu = self.menuBar()
-        fileMenu = mainMenu.addMenu('&File')
+        fileMenu = mainMenu.addMenu('&Import')
         fileMenu.addAction(ImportActionPlanes)
         fileMenu.addAction(ImportActionAntennas)
         fileMenu = mainMenu.addMenu('&Add Antenna')
@@ -173,11 +173,12 @@ class UI(QtGui.QMainWindow):
      
     # user input of antenna coordinates
     def enterAntennaCoordinates(self):
-        xcoord, xinput = QtGui.QInputDialog.getText(self, 'Enter your coordinates', 'Enter x coordinates (meters): ')
-        ycoord, yinput = QtGui.QInputDialog.getText(self, 'Enter your coordinates', 'Enter y coordinates (meters): ')
-        zcoord, zinput = QtGui.QInputDialog.getText(self, 'Enter your coordinates', 'Enter z coordinates (meters): ')
+        xcoord, xinput = QtGui.QInputDialog.getText(self, 'Enter x-value', 'Enter x coordinates (meters): ')
+        ycoord, yinput = QtGui.QInputDialog.getText(self, 'Enter y-value', 'Enter y coordinates (meters): ')
+        zcoord, zinput = QtGui.QInputDialog.getText(self, 'Enter z-value', 'Enter z coordinates (meters): ')
+        orient, oinput = QtGui.QInputDialog.getText(self, 'Enter orientation', 'Enter orientation: ')
         if xinput == True and yinput == True and zinput == True:
-            self.convertDimensions(float(xcoord), float(ycoord), float(zcoord), 0)
+            self.convertDimensions(float(xcoord), float(ycoord), float(zcoord), float(orient))
         
     # adds models to the renderer
     def addModel(self, reader):
@@ -323,7 +324,7 @@ class UI(QtGui.QMainWindow):
         
         # <----------- End Oriented Arrow ------------>
         #changed for Display coordinates to work
-        self.antennas[(x, y, z)] = arrowActor
+        self.antennas[(x, y, z, ngo)] = arrowActor
         
         # Tolerance will have to be changed, currently you need to exact location, the the decimal
         # in order to locate an antenna
