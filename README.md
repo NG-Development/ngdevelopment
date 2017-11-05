@@ -9,7 +9,7 @@
 
  2. Extract the file anywhere you'd like. 
  
- 3. Double click on **UI.exe** to demo our Beta Release
+ 3. Double click on **UI.exe** to demo our newest release.
  
 ### Models and Antennas
 
@@ -19,7 +19,7 @@
  
  3. You can import Antenna Locations via a CSV file. This can be done by clicking **File** > **Import Antennas**. (Currently we only have     a sample CSV file that matches with the **F16.stl** plane model.) You are welcome to create your own CSV file to add your own custom       antenna locations. The format follows the x, y, z values and orientation in the first, second, third, and fourth columns respectively. 
  
- ### Add-on feature
+ ### Add-on features
  
  1. We have added the ability to **Add a new antenna** through user input. 
     
