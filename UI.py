@@ -61,34 +61,77 @@ class UI(QtGui.QMainWindow):
         # <-------------BUTTONS------------->
         
         # Import button, used to import plane models from various 3D filetypes
-        self.planes = QtGui.QPushButton('Import Plane Model', self)
-        self.layout.addWidget(self.planes)
-        self.planes.clicked.connect(self.readfiles)
+
+        ##self.planes = QtGui.QPushButton('Import Plane Model', self)
+        ##self.layout.addWidget(self.planes)
+        ##self.planes.clicked.connect(self.readfiles)
+
+        ImportActionPlanes = QtGui.QAction("&Import Plane Model", self)
+        ImportActionPlanes.setStatusTip("Import Plane")
+        ImportActionPlanes.triggered.connect(self.readfiles)
 
         # Wireframe button, used to toggle between solid and wireframe mode
-        self.wireframe = QtGui.QPushButton('Toggle Wireframe Mode', self)
-        self.layout.addWidget(self.wireframe)
-        self.wireframe.clicked.connect(self.toggleWireframe)
+
+        ##self.wireframe = QtGui.QPushButton('Toggle Wireframe Mode', self)
+        ##self.layout.addWidget(self.wireframe)
+        ##self.wireframe.clicked.connect(self.toggleWireframe)
+
+        WireframeToggle = QtGui.QAction("Toggle Wireframe", self)
+        WireframeToggle.setStatusTip("Wireframe On/Off")
+        WireframeToggle.triggered.connect(self.toggleWireframe)
 
         # Import Antennas, used to import antennas from a csv
-        self.antennaImport = QtGui.QPushButton('Import Antennas From CSV', self)
-        self.layout.addWidget(self.antennaImport)
-        self.antennaImport.clicked.connect(self.importCSV)
+
+        ##self.antennaImport = QtGui.QPushButton('Import Antennas From CSV', self)
+        ##self.layout.addWidget(self.antennaImport)
+        ##self.antennaImport.clicked.connect(self.importCSV)
+
+        ImportActionAntennas = QtGui.QAction("&Import Antennas", self)
+        ImportActionAntennas.setStatusTip("Import Antennas")
+        ImportActionAntennas.triggered.connect(self.importCSV)
+        
 
         # Toggle Antennas, used to Show/Hide antennas
-        self.antenna = QtGui.QPushButton('Toggle Antennas', self)
-        self.layout.addWidget(self.antenna)
-        self.antenna.clicked.connect(self.showAntenna)
+
+        ##self.antenna = QtGui.QPushButton('Toggle Antennas', self)
+        ##self.layout.addWidget(self.antenna)
+        ##self.antenna.clicked.connect(self.showAntenna)
+
+        AntennaToggle = QtGui.QAction("&Toggle Antenna", self)
+        AntennaToggle.setStatusTip("Antenna On/Off")
+        AntennaToggle.triggered.connect(self.showAntenna)
 
         # User input of Antenna Coordinates
-        self.addAntenna = QtGui.QPushButton('Enter Antenna Coordinates', self)
-        self.layout.addWidget(self.addAntenna)
-        self.addAntenna.clicked.connect(self.enterAntennaCoordinates)
+        
+        ##self.addAntenna = QtGui.QPushButton('Enter Antenna Coordinates', self)
+        ##self.layout.addWidget(self.addAntenna)
+        ##self.addAntenna.clicked.connect(self.enterAntennaCoordinates)
+
+        AntennaCoordinates = QtGui.QAction("&Antenna Coordinates", self)
+        AntennaCoordinates.setStatusTip("Input Antenna Coordinates")
+        AntennaCoordinates.triggered.connect(self.enterAntennaCoordinates)
 
         # Display Antenna Coordinates
-        self.showCoords = QtGui.QPushButton('Display Antenna Coordinates', self)
-        self.layout.addWidget(self.showCoords)
-        self.showCoords.clicked.connect(self.showCoordinates)
+        
+        ##self.showCoords = QtGui.QPushButton('Display Antenna Coordinates', self)
+        ##self.layout.addWidget(self.showCoords)
+        ##self.showCoords.clicked.connect(self.showCoordinates)
+
+        DisplayCoordinates = QtGui.QAction("&Display Coordinates", self)
+        DisplayCoordinates.setStatusTip("Display Coordinates")
+        DisplayCoordinates.triggered.connect(self.showCoordinates)
+
+        #Main Menu, Bar on top of the window
+        mainMenu = self.menuBar()
+        fileMenu = mainMenu.addMenu('&Import')
+        fileMenu.addAction(ImportActionPlanes)
+        fileMenu.addAction(ImportActionAntennas)
+        fileMenu = mainMenu.addMenu('&Wireframe')
+        fileMenu.addAction(WireframeToggle)
+        fileMenu = mainMenu.addMenu('&Antenna')
+        fileMenu.addAction(AntennaToggle)
+        fileMenu.addAction(AntennaCoordinates)
+        fileMenu.addAction(DisplayCoordinates)
 
         # <--------------------------------->
 
