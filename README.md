@@ -9,7 +9,9 @@
 
  2. Extract the file anywhere you'd like. 
  
- 3. Double click on **UI.exe** to demo our newest release.
+ 4. Locate the **UI.zip** and extract that folder to your desktop.
+ 
+ 3. Locate and double click on **UI.exe** to demo our newest release.
  
 ### Models and Antennas
 
