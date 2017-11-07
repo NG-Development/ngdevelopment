@@ -308,7 +308,8 @@ class UI(QtGui.QMainWindow):
             arrowMapper.SetInputConnection(transformPD.GetOutputPort())
 
         arrowActor.SetMapper(arrowMapper)
-        
+
+        #test
         sphereStartSource = vtk.vtkSphereSource()
         sphereStartSource.SetCenter(startPoint)
         sphereStartSource.SetRadius(1.5)
