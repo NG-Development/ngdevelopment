@@ -6,34 +6,34 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>833</width>
-    <height>232</height>
+    <width>677</width>
+    <height>149</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Remove Antenna</string>
+   <string>Edit Antenna</string>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>40</y>
-     <width>258</width>
-     <height>131</height>
+     <x>210</x>
+     <y>0</y>
+     <width>121</width>
+     <height>121</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTextEdit" name="XEdit"/>
+     <widget class="QLineEdit" name="XEdit"/>
     </item>
     <item>
-     <widget class="QTextEdit" name="YEdit"/>
+     <widget class="QLineEdit" name="YEdit"/>
     </item>
     <item>
-     <widget class="QTextEdit" name="ZEdit"/>
+     <widget class="QLineEdit" name="ZEdit"/>
     </item>
     <item>
-     <widget class="QTextEdit" name="OEdit"/>
+     <widget class="QLineEdit" name="OEdit"/>
     </item>
    </layout>
   </widget>
@@ -41,37 +41,37 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
-     <width>147</width>
-     <height>130</height>
+     <y>0</y>
+     <width>191</width>
+     <height>121</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Antenna Original X Coordinate</string>
+       <string>Original Antenna x-coordinate (meters)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Antenna Original Y Coordinate</string>
+       <string>Original Antenna x-coordinate (meters)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>Antenna Original Z Coordinate</string>
+       <string>Original Antenna x-coordinate (meters)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_7">
       <property name="text">
-       <string>Antenna Original Orientation</string>
+       <string>Original Antenna orientation (Z-Axis)</string>
       </property>
      </widget>
     </item>
@@ -80,8 +80,8 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>670</x>
-     <y>200</y>
+     <x>510</x>
+     <y>120</y>
      <width>158</width>
      <height>25</height>
     </rect>
@@ -106,38 +106,38 @@
   <widget class="QWidget" name="layoutWidget_3">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>40</y>
-     <width>147</width>
-     <height>130</height>
+     <x>350</x>
+     <y>0</y>
+     <width>181</width>
+     <height>121</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
      <widget class="QLabel" name="label_4">
       <property name="text">
-       <string>Antenna New X Coordinate</string>
+       <string>New Antenna x-coordinate (meters)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_5">
       <property name="text">
-       <string>Antenna New Y Coordinate</string>
+       <string>New Antenna x-coordinate (meters)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_6">
       <property name="text">
-       <string>Antenna New Z Coordinate</string>
+       <string>New Antenna x-coordinate (meters)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_8">
       <property name="text">
-       <string>Antenna New Orientation</string>
+       <string>New Antenna orientation (Z-Axis)</string>
       </property>
      </widget>
     </item>
@@ -146,33 +146,27 @@
   <widget class="QWidget" name="layoutWidget_2">
    <property name="geometry">
     <rect>
-     <x>570</x>
-     <y>40</y>
-     <width>258</width>
-     <height>131</height>
+     <x>540</x>
+     <y>0</y>
+     <width>131</width>
+     <height>121</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
-     <widget class="QTextEdit" name="XEdit_2"/>
+     <widget class="QLineEdit" name="XEdit_2"/>
     </item>
     <item>
-     <widget class="QTextEdit" name="YEdit_2"/>
+     <widget class="QLineEdit" name="YEdit_2"/>
     </item>
     <item>
-     <widget class="QTextEdit" name="ZEdit_2"/>
+     <widget class="QLineEdit" name="ZEdit_2"/>
     </item>
     <item>
-     <widget class="QTextEdit" name="OEdit_2"/>
+     <widget class="QLineEdit" name="OEdit_2"/>
     </item>
    </layout>
   </widget>
-  <zorder>layoutWidget</zorder>
-  <zorder>layoutWidget</zorder>
-  <zorder>layoutWidget</zorder>
-  <zorder>okButton</zorder>
-  <zorder>layoutWidget_3</zorder>
-  <zorder>layoutWidget_2</zorder>
  </widget>
  <resources/>
  <connections/>
