@@ -2,12 +2,11 @@ import sys
 import vtk
 import csv
 # import xlrd
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore, QtGui, uic
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 
 class UI(QtGui.QMainWindow):
-
     # Used to toggle between wireframe and solid mode
     solid = 1
 
@@ -20,8 +19,6 @@ class UI(QtGui.QMainWindow):
     # denotes if the assembly has been made yet
     assemblyMade = False
 
-    
-
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
 
@@ -30,6 +27,7 @@ class UI(QtGui.QMainWindow):
 
         # Create Gui Frame
         self.frame = QtGui.QFrame()
+        self.test = QtGui.QDialog()
 
         # Create and add VTK render window to QT for display of VTK objects
         self.layout = QtGui.QVBoxLayout()
@@ -57,13 +55,13 @@ class UI(QtGui.QMainWindow):
 
         self.show()
         self.interactor.Initialize()
-        
+
         # <-------------BUTTONS------------->
-        
-##        self.planes = QtGui.QPushButton('Import Plane Model', self)
-##        self.layout.addWidget(self.planes)
-##        self.planes.clicked.connect(self.readfiles)
-        
+
+        ##        self.planes = QtGui.QPushButton('Import Plane Model', self)
+        ##        self.layout.addWidget(self.planes)
+        ##        self.planes.clicked.connect(self.readfiles)
+
         # Import button, used to import plane models from various 3D filetypes
         ImportActionPlanes = QtGui.QAction("&Import Plane Model", self)
         ImportActionPlanes.setStatusTip("Import Plane")
@@ -75,10 +73,10 @@ class UI(QtGui.QMainWindow):
         self.wireframe.clicked.connect(self.toggleWireframe)
 
         # Import Antennas, used to import antennas from a csv
-##        self.antennaImport = QtGui.QPushButton('Import Antennas From CSV', self)
-##        self.layout.addWidget(self.antennaImport)
-##        self.antennaImport.clicked.connect(self.importCSV)
-        
+        ##        self.antennaImport = QtGui.QPushButton('Import Antennas From CSV', self)
+        ##        self.layout.addWidget(self.antennaImport)
+        ##        self.antennaImport.clicked.connect(self.importCSV)
+
         # Import Antennas, used to import antennas from a csv
         ImportActionAntennas = QtGui.QAction("&Import Antennas", self)
         ImportActionAntennas.setStatusTip("Import Antennas")
@@ -89,15 +87,20 @@ class UI(QtGui.QMainWindow):
         self.layout.addWidget(self.antenna)
         self.antenna.clicked.connect(self.showAntenna)
 
-        
-##        self.addAntenna = QtGui.QPushButton('Enter Antenna Coordinates', self)
-##        self.layout.addWidget(self.addAntenna)
-##        self.addAntenna.clicked.connect(self.enterAntennaCoordinates)
-        
         # User input of Antenna Coordinates
         AntennaCoordinates = QtGui.QAction("&Antenna Coordinates", self)
         AntennaCoordinates.setStatusTip("Input Antenna Coordinates")
-        AntennaCoordinates.triggered.connect(self.enterAntennaCoordinates)
+        AntennaCoordinates.triggered.connect(self.addAntennaCoordinates)
+
+        # User input for removal of Antenna Coordinates
+        RemoveCoordinates = QtGui.QAction("&Remove Coordinates", self)
+        RemoveCoordinates.setStatusTip("Remove Antenna")
+        RemoveCoordinates.triggered.connect(self.removeAntennaCoordinates)
+
+        # User input for editing of Antenna Coordinates
+        EditCoordinates = QtGui.QAction("&Edit Coordinates", self)
+        EditCoordinates.setStatusTip("Edit Antenna")
+        EditCoordinates.triggered.connect(self.editAntennaCoordinates)
 
         # Display Antenna Coordinates
         self.showCoords = QtGui.QPushButton('Display Antenna Coordinates', self)
@@ -112,10 +115,13 @@ class UI(QtGui.QMainWindow):
         fileMenu = mainMenu.addMenu('&Import')
         fileMenu.addAction(ImportActionPlanes)
         fileMenu.addAction(ImportActionAntennas)
-        fileMenu = mainMenu.addMenu('&Add Antenna')
+        fileMenu = mainMenu.addMenu('&Antennas')
         fileMenu.addAction(AntennaCoordinates)
+        fileMenu.addAction(RemoveCoordinates)
+        fileMenu.addAction(EditCoordinates)
 
         # <-------------------------------->
+
     # Currently using CSV in place of XLS
     # read sample XLS sent
     ##    def readXLS(self):
@@ -132,7 +138,7 @@ class UI(QtGui.QMainWindow):
     ##        print "coordinate list: ", xyz
 
 
-        
+
     # read and print CSV file
     def readCSV(self, antennas):
         xyz = []
@@ -147,39 +153,89 @@ class UI(QtGui.QMainWindow):
             self.assembly = vtk.vtkAssembly()
             self.assemblyMade = True
         for antenna in antennaLocs:
-            self.convertDimensions(antenna[0], antenna[1], antenna[2], antenna[3])
+            self.convertDimensions(antenna[0], antenna[1], antenna[2], antenna[3], None, "add")
 
     def showCoordinates(self):
         for antenna in self.antennas:
             text = vtk.vtkTextActor3D()
             text.SetInput("")
             text.SetPosition(antenna[0], antenna[1], antenna[2])
-            label = (str(round(antenna[0],3))+", "+str(round(antenna[1],3))+", "+str(round(antenna[2],3)))
+            label = (str(round(antenna[0], 3)) + ", " + str(round(antenna[1], 3)) + ", " + str(round(antenna[2], 3)))
             text.SetInput(label)
             text.GetTextProperty().SetFontSize(10)
             text.GetTextProperty().SetColor(1.0, 1.0, 4)
             text.GetTextProperty().SetJustificationToCentered()
             self.render.AddActor(text)
             self.interactor.Render()
-    
+
     # import CSV files for antenna coordinates
     def importCSV(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import CSV files")
         file = open(filename, 'r')
         self.readCSV(filename)
 
-        #refresh the renderer
+        # refresh the renderer
         self.interactor.Render()
-     
-    # user input of antenna coordinates
-    def enterAntennaCoordinates(self):
-        xcoord, xinput = QtGui.QInputDialog.getText(self, 'Enter x-value', 'Enter x coordinates (meters): ')
-        ycoord, yinput = QtGui.QInputDialog.getText(self, 'Enter y-value', 'Enter y coordinates (meters): ')
-        zcoord, zinput = QtGui.QInputDialog.getText(self, 'Enter z-value', 'Enter z coordinates (meters): ')
-        orient, oinput = QtGui.QInputDialog.getText(self, 'Enter orientation', 'Enter orientation: ')
-        if xinput == True and yinput == True and zinput == True:
-            self.convertDimensions(float(xcoord), float(ycoord), float(zcoord), float(orient))
-        
+
+    # Opens window for taking user input to add an antenna
+    def addAntennaCoordinates(self):
+        self.test = QtGui.QDialog()
+        uic.loadUi('Guis/Add Antenna.ui', self.test)
+        self.test.show()
+        self.test.okButton.clicked.connect(self.addFromPopup)
+
+    # Opens window for taking user input to remove an antenna
+    def removeAntennaCoordinates(self):
+        self.test = QtGui.QDialog()
+        uic.loadUi('Guis/Remove Antenna.ui', self.test)
+        self.test.show()
+        self.test.okButton.clicked.connect(self.removeFromPopup)
+
+    def editAntennaCoordinates(self):
+        self.test = QtGui.QDialog()
+        uic.loadUi('Guis/Edit Antenna.ui', self.test)
+        self.test.show()
+        self.test.okButton.clicked.connect(self.editFromPopup)
+
+    # Calls convertdimensions add functionality from User input
+    def addFromPopup(self):
+        xcoord = self.test.XEdit.toPlainText()
+        ycoord = self.test.YEdit.toPlainText()
+        zcoord = self.test.ZEdit.toPlainText()
+        ocoord = self.test.OEdit.toPlainText()
+        try:
+            self.convertDimensions(float(xcoord), float(ycoord), float(zcoord), float(ocoord), None, "add")
+            self.test.hide()
+        except:
+            print("Improper Values Provided For Location")
+
+    # Calls convertdimensions remove functionality from User input
+    def removeFromPopup(self):
+        xcoord = self.test.XEdit.toPlainText()
+        ycoord = self.test.YEdit.toPlainText()
+        zcoord = self.test.ZEdit.toPlainText()
+        try:
+            self.convertDimensions(float(xcoord), float(ycoord), float(zcoord), float(0), None, "remove")
+            self.test.hide()
+        except:
+            print("Improper Values Provided For Location")
+
+    def editFromPopup(self):
+        xorig = self.test.XEdit.toPlainText()
+        yorig = self.test.YEdit.toPlainText()
+        zorig = self.test.ZEdit.toPlainText()
+        oorig = self.test.OEdit.toPlainText()
+        xnew = self.test.XEdit_2.toPlainText()
+        ynew = self.test.YEdit_2.toPlainText()
+        znew = self.test.ZEdit_2.toPlainText()
+        onew = self.test.OEdit_2.toPlainText()
+        try:
+            self.convertDimensions(float(xorig), float(yorig), float(zorig), float(oorig),
+                                   (float(xnew), float(ynew), float(znew), float(onew)), "edit")
+            self.test.hide()
+        except:
+            print("Improper Values Provided For Location")
+
     # adds models to the renderer
     def addModel(self, reader):
         self.maper = vtk.vtkPolyDataMapper()
@@ -198,7 +254,7 @@ class UI(QtGui.QMainWindow):
         self.render.ResetCamera()
         self.interactor.Render()
 
-    def convertDimensions(self, ngx, ngy, ngz, ngo):
+    def convertDimensions(self, ngx, ngy, ngz, ngo, edit, mode):
         '''It's important to note that NG uses different x,y, and z coordinates than VTK.  NG's x
         plane start at 0 at the tip of the nose and extends to the back of the plane.  VTK's x
         starts at the tip of the plane's right and extends to the tip of the plane's left wing.
@@ -261,90 +317,103 @@ class UI(QtGui.QMainWindow):
         # Add the main actor(the plane) to the assembly
         self.assembly.AddPart(self.actor)
 
-##        # Create a sphere of radius 3 and assign it an actor and mapper
-##        sphere = vtk.vtkSphereSource()
-##        sphere.SetRadius(3)
-##        sphereMapper = vtk.vtkPolyDataMapper()
-##        sphereMapper.SetInputConnection(sphere.GetOutputPort())
-##        sphereActor = vtk.vtkActor()
-##        sphereActor.SetMapper(sphereMapper)
-##
-##        # Set the sphere to the location calculated by the method and set its color to red before
-##        # adding it to the assembly
-##        sphereActor.SetPosition(x, y, z)
-##        sphereActor.GetProperty().SetColor(255, 0, 0)
-##        self.assembly.AddPart(sphereActor)
+        ##        # Create a sphere of radius 3 and assign it an actor and mapper
+        ##        sphere = vtk.vtkSphereSource()
+        ##        sphere.SetRadius(3)
+        ##        sphereMapper = vtk.vtkPolyDataMapper()
+        ##        sphereMapper.SetInputConnection(sphere.GetOutputPort())
+        ##        sphereActor = vtk.vtkActor()
+        ##        sphereActor.SetMapper(sphereMapper)
+        ##
+        ##        # Set the sphere to the location calculated by the method and set its color to red before
+        ##        # adding it to the assembly
+        ##        sphereActor.SetPosition(x, y, z)
+        ##        sphereActor.GetProperty().SetColor(255, 0, 0)
+        ##        self.assembly.AddPart(sphereActor)
 
         # <----------- Oriented Arrow ------------>
+        if (mode == "add"):
 
-        USER_MATRIX = False
-        arrow = vtk.vtkArrowSource()
-        arrow.SetTipRadius(.1)
-        arrow.SetTipLength(.3)
+            USER_MATRIX = False
+            arrow = vtk.vtkArrowSource()
+            arrow.SetTipRadius(.1)
+            arrow.SetTipLength(.3)
 
-        # set start and end points for cylinders
-        startPoint = [0, 0, 0]
-        startPoint[0] = x
-        startPoint[1] = y
-        startPoint[2] = z
-        
-        # transform
-        transform = vtk.vtkTransform()
-        transform.Translate(startPoint)
-        transform.RotateZ(ngo)
-        transform.Scale(30, 30, 30)
+            # set start and end points for cylinders
+            startPoint = [0, 0, 0]
+            startPoint[0] = x
+            startPoint[1] = y
+            startPoint[2] = z
 
-        transformPD =  vtk.vtkTransformPolyDataFilter()
-        transformPD.SetTransform(transform)
-        transformPD.SetInputConnection(arrow.GetOutputPort())
-        
-        arrowMapper = vtk.vtkPolyDataMapper()
-        arrowActor = vtk.vtkActor()
+            # transform
+            transform = vtk.vtkTransform()
+            transform.Translate(startPoint)
+            transform.RotateZ(ngo)
+            transform.Scale(30, 30, 30)
 
+            transformPD = vtk.vtkTransformPolyDataFilter()
+            transformPD.SetTransform(transform)
+            transformPD.SetInputConnection(arrow.GetOutputPort())
 
-        if USER_MATRIX:
-            arrowMapper.SetInputConnection(arrow.GetOutputPort())
-        else:
-            arrowMapper.SetInputConnection(transformPD.GetOutputPort())
+            arrowMapper = vtk.vtkPolyDataMapper()
+            arrowActor = vtk.vtkActor()
 
-        arrowActor.SetMapper(arrowMapper)
+            if USER_MATRIX:
+                arrowMapper.SetInputConnection(arrow.GetOutputPort())
+            else:
+                arrowMapper.SetInputConnection(transformPD.GetOutputPort())
 
-        #test
-        sphereStartSource = vtk.vtkSphereSource()
-        sphereStartSource.SetCenter(startPoint)
-        sphereStartSource.SetRadius(1.5)
-        sphereStartMapper = vtk.vtkPolyDataMapper()
-        sphereStartMapper.SetInputConnection(sphereStartSource.GetOutputPort())
-        sphereStart = vtk.vtkActor()
-        sphereStart.SetMapper(sphereStartMapper)
-        sphereStart.GetProperty().SetColor(255, 0, 0)
+            arrowActor.SetMapper(arrowMapper)
 
-        # add Arrow to assembly
-        self.assembly.AddPart(arrowActor)
-        self.assembly.AddPart(sphereStart)
-        
-        # <----------- End Oriented Arrow ------------>
-        #changed for Display coordinates to work
-        self.antennas[(x, y, z, ngo)] = arrowActor
-        
-        # Tolerance will have to be changed, currently you need to exact location, the the decimal
-        # in order to locate an antenna
+            sphereStartSource = vtk.vtkSphereSource()
+            sphereStartSource.SetCenter(startPoint)
+            sphereStartSource.SetRadius(1.5)
+            sphereStartMapper = vtk.vtkPolyDataMapper()
+            sphereStartMapper.SetInputConnection(sphereStartSource.GetOutputPort())
+            sphereStart = vtk.vtkActor()
+            sphereStart.SetMapper(sphereStartMapper)
+            sphereStart.GetProperty().SetColor(255, 0, 0)
 
+            # add Arrow to assembly
+            self.assembly.AddPart(arrowActor)
+            self.assembly.AddPart(sphereStart)
 
-    # <-------------BUTTON TOGGLES------------->    
+            # <----------- End Oriented Arrow ------------>
+            # changed for Display coordinates to work
+            self.antennas[(x, y, z)] = (sphereStart, arrowActor)
+
+        elif (mode == "remove"):
+            if ((x, y, z) in self.antennas.keys()):
+                target = self.antennas[(x, y, z)]
+                self.assembly.RemovePart(target[0])
+                self.assembly.RemovePart(target[1])
+                self.render.RemoveActor(target[0])
+                self.render.RemoveActor(target[1])
+                self.antennas.pop((x, y, z))
+            else:
+                print("Invalid Antenna Location")
+
+        elif (mode == "edit"):
+            if ((x, y, z) in self.antennas.keys()):
+                self.convertDimensions(ngx, ngy, ngz, ngo, None, "remove")
+                self.convertDimensions(edit[0], edit[1], edit[2], edit[3], None, "add")
+
+    # <-------------BUTTON TOGGLES------------->
     # Show Antenna on model
     def showAntenna(self):
         if self.showANT == 1:
             # antennas should be shown, add all from dictionary to assembly
             for antenna in self.antennas:
-                self.assembly.AddPart(self.antennas[antenna])
+                self.assembly.AddPart(self.antennas[antenna][0])
+                self.assembly.AddPart(self.antennas[antenna][1])
             self.render.ResetCamera()
             self.interactor.Render()
             self.showANT = 0
         else:
             # antennas should be hidden, remove all in dictionary from assembly
             for antenna in self.antennas:
-                self.assembly.RemovePart(self.antennas[antenna])
+                self.assembly.RemovePart(self.antennas[antenna][0])
+                self.assembly.RemovePart(self.antennas[antenna][1])
             self.render.ResetCamera()
             self.interactor.Render()
             self.showANT = 1
@@ -360,10 +429,8 @@ class UI(QtGui.QMainWindow):
             self.interactor.Render()
             self.solid = 1
 
-
-            
     # <---------------------------------------->
-    
+
     # importing OBJ/STL/PLY currently
     def readfiles(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import Models")
