@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>311</width>
+    <height>169</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,24 +16,24 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>40</y>
-     <width>258</width>
-     <height>191</height>
+     <x>160</x>
+     <y>0</y>
+     <width>141</width>
+     <height>141</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTextEdit" name="XEdit"/>
+     <widget class="QLineEdit" name="XEdit"/>
     </item>
     <item>
-     <widget class="QTextEdit" name="YEdit"/>
+     <widget class="QLineEdit" name="YEdit"/>
     </item>
     <item>
-     <widget class="QTextEdit" name="ZEdit"/>
+     <widget class="QLineEdit" name="ZEdit"/>
     </item>
     <item>
-     <widget class="QTextEdit" name="OEdit"/>
+     <widget class="QLineEdit" name="OEdit"/>
     </item>
    </layout>
   </widget>
@@ -41,37 +41,37 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
-     <width>108</width>
-     <height>191</height>
+     <y>0</y>
+     <width>136</width>
+     <height>141</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Antenna X Coordinate</string>
+       <string>Enter x-coordinate (meters)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Antenna Y Coordinate</string>
+       <string>Enter y-coordinate (meters)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>Antenna Z Coordinate</string>
+       <string>Enter z-coordinate (meters)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_4">
       <property name="text">
-       <string>Antenna Orientation</string>
+       <string>Enter Orientation</string>
       </property>
      </widget>
     </item>
@@ -80,8 +80,8 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>230</x>
-     <y>260</y>
+     <x>140</x>
+     <y>140</y>
      <width>158</width>
      <height>25</height>
     </rect>

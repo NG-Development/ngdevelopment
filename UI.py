@@ -199,10 +199,10 @@ class UI(QtGui.QMainWindow):
 
     # Calls convertdimensions add functionality from User input
     def addFromPopup(self):
-        xcoord = self.test.XEdit.toPlainText()
-        ycoord = self.test.YEdit.toPlainText()
-        zcoord = self.test.ZEdit.toPlainText()
-        ocoord = self.test.OEdit.toPlainText()
+        xcoord = self.test.XEdit.text()
+        ycoord = self.test.YEdit.text()
+        zcoord = self.test.ZEdit.text()
+        ocoord = self.test.OEdit.text()
         try:
             self.convertDimensions(float(xcoord), float(ycoord), float(zcoord), float(ocoord), None, "add")
             self.test.hide()
@@ -211,9 +211,9 @@ class UI(QtGui.QMainWindow):
 
     # Calls convertdimensions remove functionality from User input
     def removeFromPopup(self):
-        xcoord = self.test.XEdit.toPlainText()
-        ycoord = self.test.YEdit.toPlainText()
-        zcoord = self.test.ZEdit.toPlainText()
+        xcoord = self.test.XEdit.text()
+        ycoord = self.test.YEdit.text()
+        zcoord = self.test.ZEdit.text()
         try:
             self.convertDimensions(float(xcoord), float(ycoord), float(zcoord), float(0), None, "remove")
             self.test.hide()
@@ -221,14 +221,14 @@ class UI(QtGui.QMainWindow):
             print("Improper Values Provided For Location")
 
     def editFromPopup(self):
-        xorig = self.test.XEdit.toPlainText()
-        yorig = self.test.YEdit.toPlainText()
-        zorig = self.test.ZEdit.toPlainText()
-        oorig = self.test.OEdit.toPlainText()
-        xnew = self.test.XEdit_2.toPlainText()
-        ynew = self.test.YEdit_2.toPlainText()
-        znew = self.test.ZEdit_2.toPlainText()
-        onew = self.test.OEdit_2.toPlainText()
+        xorig = self.test.XEdit.text()
+        yorig = self.test.YEdit.text()
+        zorig = self.test.ZEdit.text()
+        oorig = self.test.OEdit.text()
+        xnew = self.test.XEdit_2.text()
+        ynew = self.test.YEdit_2.text()
+        znew = self.test.ZEdit_2.text()
+        onew = self.test.OEdit_2.text()
         try:
             self.convertDimensions(float(xorig), float(yorig), float(zorig), float(oorig),
                                    (float(xnew), float(ynew), float(znew), float(onew)), "edit")
