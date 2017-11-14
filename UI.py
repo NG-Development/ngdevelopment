@@ -246,6 +246,8 @@ class UI(QtGui.QMainWindow):
             self.assembly = vtk.vtkAssembly()
             self.assemblyMade = True
         temp = []
+        self.nglist = []
+        self.ngLOCS = []
         for antenna in self.antennas:
             temp.append(antenna)
         for antenna in temp:
@@ -324,7 +326,7 @@ class UI(QtGui.QMainWindow):
             arrow.SetTipRadius(.1)
             arrow.SetTipLength(.3)
 
-            # set start and end points for cylinders
+            # set start points for arrows
             startPoint = [0, 0, 0]
             startPoint[0] = x
             startPoint[1] = y
@@ -333,7 +335,7 @@ class UI(QtGui.QMainWindow):
             # transform
             transform = vtk.vtkTransform()
             transform.Translate(startPoint)
-            transform.RotateZ(ngo)
+            transform.RotateWXYZ(-(ngo + 90), 0, 1, 0)
             transform.Scale(30, 30, 30)
 
             transformPD = vtk.vtkTransformPolyDataFilter()
