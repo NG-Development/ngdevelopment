@@ -68,9 +68,9 @@ class UI(QtGui.QMainWindow):
         ImportActionPlanes.triggered.connect(self.readfiles)
 
         # Wireframe button, used to toggle between solid and wireframe mode
-        self.wireframe = QtGui.QPushButton('Toggle Wireframe', self)
-        self.layout.addWidget(self.wireframe)
-        self.wireframe.clicked.connect(self.toggleWireframe)
+        WireframeToggle = QtGui.QAction('&Toggle Wireframe', self)
+        WireframeToggle.setStatusTip("Toggle Wireframe")
+        WireframeToggle.triggered.connect(self.toggleWireframe)
 
         # Import Antennas, used to import antennas from a csv
         ImportActionAntennas = QtGui.QAction("&Import Antennas", self)
@@ -83,9 +83,9 @@ class UI(QtGui.QMainWindow):
         ExportAntennas.triggered.connect(self.writeCSV)        
 
         # Toggle Antennas, used to Show/Hide antennas
-        self.antenna = QtGui.QPushButton('Toggle Antennas', self)
-        self.layout.addWidget(self.antenna)
-        self.antenna.clicked.connect(self.showAntenna)
+        AntennaToggle = QtGui.QAction('&Toggle Antennas', self)
+        AntennaToggle.setStatusTip("Toggle Antenna")
+        AntennaToggle.triggered.connect(self.showAntenna)
 
         # User input of Antenna Coordinates
         AntennaCoordinates = QtGui.QAction("&Add Antenna", self)
@@ -121,24 +121,11 @@ class UI(QtGui.QMainWindow):
         fileMenu.addAction(AntennaCoordinates)
         fileMenu.addAction(RemoveCoordinates)
         fileMenu.addAction(EditCoordinates)
+        fileMenu = mainMenu.addMenu('&Toggle')
+        fileMenu.addAction(WireframeToggle)
+        fileMenu.addAction(AntennaToggle)
 
-        # <-------------------------------->
-
-    # Currently using CSV in place of XLS
-    # read sample XLS sent
-    ##    def readXLS(self):
-    ##        fileXLS = xlrd.open_workbook('F16.xls')
-    ##        coordinates = fileXLS.sheet_by_index(0)
-    ##
-    ##        xyz = []
-    ##        #xyz =[] #list of xyz in each row
-    ##        coords = [] #list of all coordinates
-    ##        for i in range(0, 9):
-    ##            xyz.append([])
-    ##            for j in range(0, 3):
-    ##                xyz[i].append(coordinates.cell(i , j))
-    ##        print "coordinate list: ", xyz
-
+    # <-------------------------------->
 
     # filename without extension
     def getsaveNAME(self, savename):
@@ -258,7 +245,17 @@ class UI(QtGui.QMainWindow):
         if (not self.assemblyMade):
             self.assembly = vtk.vtkAssembly()
             self.assemblyMade = True
-        self.assembly = vtk.vtkAssembly()
+        temp = []
+        for antenna in self.antennas:
+            temp.append(antenna)
+        for antenna in temp:
+            target = self.antennas[antenna]
+            self.assembly.RemovePart(target[0])
+            self.assembly.RemovePart(target[1])
+            self.render.RemoveActor(target[0])
+            self.render.RemoveActor(target[1])
+            self.antennas.pop(antenna)
+        del temp
         # Add the main actor(plane model) to the assembly then call render and reset the camera
         self.assembly.AddPart(self.actor)
         self.render.AddActor(self.assembly)
@@ -295,12 +292,6 @@ class UI(QtGui.QMainWindow):
         mod = 20.80
         # Used to convert meters to VTK units.  This is specific to each plane model, but since MVP only
         # deals with the F16, this will remain hardcoded until more models are supported
-
-        # Outdated, we have decided to stick with one conversion unit as the slight variations are likely
-        # due to addition parts on the model not accounted for by the specs found on wikipedia.
-        # xmod = 22.7579323642
-        # ymod = 20.6538935177
-        # zmod = 20.957569867
 
         x = xmid + (ngy * mod)
         # Since NG's y is our x and starts in the middle of the plane, we find the middle and apply
