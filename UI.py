@@ -19,6 +19,10 @@ class UI(QtGui.QMainWindow):
     # denotes if the assembly has been made yet
     assemblyMade = False
 
+    # list of antenna coordinates for updated CSV
+    nglist = []
+    ngLOCS = []
+
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
 
@@ -57,11 +61,7 @@ class UI(QtGui.QMainWindow):
         self.interactor.Initialize()
 
         # <-------------BUTTONS------------->
-
-        ##        self.planes = QtGui.QPushButton('Import Plane Model', self)
-        ##        self.layout.addWidget(self.planes)
-        ##        self.planes.clicked.connect(self.readfiles)
-
+        
         # Import button, used to import plane models from various 3D filetypes
         ImportActionPlanes = QtGui.QAction("&Import Plane Model", self)
         ImportActionPlanes.setStatusTip("Import Plane")
@@ -73,14 +73,14 @@ class UI(QtGui.QMainWindow):
         self.wireframe.clicked.connect(self.toggleWireframe)
 
         # Import Antennas, used to import antennas from a csv
-        ##        self.antennaImport = QtGui.QPushButton('Import Antennas From CSV', self)
-        ##        self.layout.addWidget(self.antennaImport)
-        ##        self.antennaImport.clicked.connect(self.importCSV)
-
-        # Import Antennas, used to import antennas from a csv
         ImportActionAntennas = QtGui.QAction("&Import Antennas", self)
         ImportActionAntennas.setStatusTip("Import Antennas")
         ImportActionAntennas.triggered.connect(self.importCSV)
+
+        # Export Antennas
+        ExportAntennas = QtGui.QAction("&Export Antenna Locations", self)
+        ExportAntennas.setStatusTip("Export Antenna to CSV")
+        ExportAntennas.triggered.connect(self.writeCSV)        
 
         # Toggle Antennas, used to Show/Hide antennas
         self.antenna = QtGui.QPushButton('Toggle Antennas', self)
@@ -88,24 +88,24 @@ class UI(QtGui.QMainWindow):
         self.antenna.clicked.connect(self.showAntenna)
 
         # User input of Antenna Coordinates
-        AntennaCoordinates = QtGui.QAction("&Antenna Coordinates", self)
+        AntennaCoordinates = QtGui.QAction("&Add Antenna", self)
         AntennaCoordinates.setStatusTip("Input Antenna Coordinates")
         AntennaCoordinates.triggered.connect(self.addAntennaCoordinates)
 
         # User input for removal of Antenna Coordinates
-        RemoveCoordinates = QtGui.QAction("&Remove Coordinates", self)
+        RemoveCoordinates = QtGui.QAction("&Remove Antenna", self)
         RemoveCoordinates.setStatusTip("Remove Antenna")
         RemoveCoordinates.triggered.connect(self.removeAntennaCoordinates)
 
         # User input for editing of Antenna Coordinates
-        EditCoordinates = QtGui.QAction("&Edit Coordinates", self)
+        EditCoordinates = QtGui.QAction("&Edit Antenna", self)
         EditCoordinates.setStatusTip("Edit Antenna")
         EditCoordinates.triggered.connect(self.editAntennaCoordinates)
 
         # Display Antenna Coordinates
-        self.showCoords = QtGui.QPushButton('Display Antenna Coordinates', self)
-        self.layout.addWidget(self.showCoords)
-        self.showCoords.clicked.connect(self.showCoordinates)
+##        self.showCoords = QtGui.QPushButton('Display Antenna Coordinates', self)
+##        self.layout.addWidget(self.showCoords)
+##        self.showCoords.clicked.connect(self.showCoordinates)
 
         # <--------------------------------->
 
@@ -115,6 +115,8 @@ class UI(QtGui.QMainWindow):
         fileMenu = mainMenu.addMenu('&Import')
         fileMenu.addAction(ImportActionPlanes)
         fileMenu.addAction(ImportActionAntennas)
+        fileMenu = mainMenu.addMenu('&Export')
+        fileMenu.addAction(ExportAntennas)
         fileMenu = mainMenu.addMenu('&Antennas')
         fileMenu.addAction(AntennaCoordinates)
         fileMenu.addAction(RemoveCoordinates)
@@ -138,6 +140,10 @@ class UI(QtGui.QMainWindow):
     ##        print "coordinate list: ", xyz
 
 
+    # filename without extension
+    def getsaveNAME(self, savename):
+        self.newsave = QtCore.QFileInfo(savename).baseName()
+        self.newsave += "(updated).csv"
 
     # read and print CSV file
     def readCSV(self, antennas):
@@ -176,6 +182,11 @@ class UI(QtGui.QMainWindow):
 
         # refresh the renderer
         self.interactor.Render()
+
+    def writeCSV(self):
+        with open(self.newsave, 'wb') as csvfile:
+            saveAntennas = csv.writer(csvfile)
+            saveAntennas.writerows(self.ngLOCS)
 
     # Opens window for taking user input to add an antenna
     def addAntennaCoordinates(self):
@@ -258,19 +269,16 @@ class UI(QtGui.QMainWindow):
         '''It's important to note that NG uses different x,y, and z coordinates than VTK.  NG's x
         plane start at 0 at the tip of the nose and extends to the back of the plane.  VTK's x
         starts at the tip of the plane's right and extends to the tip of the plane's left wing.
-
         NG's y starts at 0 in the center of the plane and extends to each wing tip.  Extending to
         the plane's right wing increases the value of y while exntending to the plane's left wing
         decreases the value of y. VTK's y start at the bottom-most point of the plane and extends
         to the top-most point.  The bottom-most point is 0 and increases as you extend towards
         the top-most point.
-
         NG's z start just on top of the nose of the plane and extends to the bottom-most and
         top-most points of the plane.  It increases as you move towards the bottom-most point
         and decreases as you move towards the top-most point.  VTK's z begins at the tip of the
         nose of the plane and extends to the tip of the back of the plane.  The tip of the nose
         is 0 and increases as you extend towards the back.
-
         Orientation is not currently implemented and thus ngo is not used.
         '''
 
@@ -316,20 +324,6 @@ class UI(QtGui.QMainWindow):
             self.assembly = vtk.vtkAssembly()
         # Add the main actor(the plane) to the assembly
         self.assembly.AddPart(self.actor)
-
-        ##        # Create a sphere of radius 3 and assign it an actor and mapper
-        ##        sphere = vtk.vtkSphereSource()
-        ##        sphere.SetRadius(3)
-        ##        sphereMapper = vtk.vtkPolyDataMapper()
-        ##        sphereMapper.SetInputConnection(sphere.GetOutputPort())
-        ##        sphereActor = vtk.vtkActor()
-        ##        sphereActor.SetMapper(sphereMapper)
-        ##
-        ##        # Set the sphere to the location calculated by the method and set its color to red before
-        ##        # adding it to the assembly
-        ##        sphereActor.SetPosition(x, y, z)
-        ##        sphereActor.GetProperty().SetColor(255, 0, 0)
-        ##        self.assembly.AddPart(sphereActor)
 
         # <----------- Oriented Arrow ------------>
         if (mode == "add"):
@@ -381,6 +375,8 @@ class UI(QtGui.QMainWindow):
             # <----------- End Oriented Arrow ------------>
             # changed for Display coordinates to work
             self.antennas[(x, y, z)] = (sphereStart, arrowActor)
+            self.nglist = (ngx, ngy, ngz, ngo)
+            self.ngLOCS.append(self.nglist)
 
         elif (mode == "remove"):
             if ((x, y, z) in self.antennas.keys()):
@@ -436,6 +432,9 @@ class UI(QtGui.QMainWindow):
         filename = QtGui.QFileDialog.getOpenFileName(self, "Import Models")
         file = open(filename, "r")
         extension = QtCore.QFileInfo(filename).suffix()
+
+        # give pre-made filename without extension 
+        self.getsaveNAME(filename)
 
         # create an obj, stl, ply reader based on the extension of the filename selected
         # we add the selected 3D model to our renderer
