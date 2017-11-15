@@ -57,14 +57,14 @@
     <item>
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Original Antenna x-coordinate (meters)</string>
+       <string>Original Antenna y-coordinate (meters)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>Original Antenna x-coordinate (meters)</string>
+       <string>Original Antenna z-coordinate (meters)</string>
       </property>
      </widget>
     </item>
@@ -123,14 +123,14 @@
     <item>
      <widget class="QLabel" name="label_5">
       <property name="text">
-       <string>New Antenna x-coordinate (meters)</string>
+       <string>New Antenna y-coordinate (meters)</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_6">
       <property name="text">
-       <string>New Antenna x-coordinate (meters)</string>
+       <string>New Antenna z-coordinate (meters)</string>
       </property>
      </widget>
     </item>
