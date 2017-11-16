@@ -102,6 +102,11 @@ class UI(QtGui.QMainWindow):
         EditCoordinates.setStatusTip("Edit Antenna")
         EditCoordinates.triggered.connect(self.editAntennaCoordinates)
 
+        # Removes all antennas
+        RemoveAll = QtGui.QAction("&Clear All Antennas", self)
+        RemoveAll.setStatusTip("Clear All Antennas")
+        RemoveAll.triggered.connect(self.removeAllAntennas)
+
         # Display Antenna Coordinates
 ##        self.showCoords = QtGui.QPushButton('Display Antenna Coordinates', self)
 ##        self.layout.addWidget(self.showCoords)
@@ -121,6 +126,7 @@ class UI(QtGui.QMainWindow):
         fileMenu.addAction(AntennaCoordinates)
         fileMenu.addAction(RemoveCoordinates)
         fileMenu.addAction(EditCoordinates)
+        fileMenu.addAction(RemoveAll)
         fileMenu = mainMenu.addMenu('&Toggle')
         fileMenu.addAction(WireframeToggle)
         fileMenu.addAction(AntennaToggle)
@@ -174,6 +180,20 @@ class UI(QtGui.QMainWindow):
         with open(self.newsave, 'wb') as csvfile:
             saveAntennas = csv.writer(csvfile)
             saveAntennas.writerows(self.ngLOCS)
+
+    # Removes all currently placed antennas
+    def removeAllAntennas(self):
+        temp = []
+        for antenna in self.antennas:
+            temp.append(antenna)
+        for antenna in temp:
+            target = self.antennas[antenna]
+            self.assembly.RemovePart(target[0])
+            self.assembly.RemovePart(target[1])
+            self.render.RemoveActor(target[0])
+            self.render.RemoveActor(target[1])
+            self.antennas.pop(antenna)
+        del temp
 
     # Opens window for taking user input to add an antenna
     def addAntennaCoordinates(self):
