@@ -23,6 +23,8 @@ class UI(QtGui.QMainWindow):
     nglist = []
     ngLOCS = []
 
+    counter = 0
+    
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
 
@@ -125,7 +127,7 @@ class UI(QtGui.QMainWindow):
         fileMenu.addAction(WireframeToggle)
         fileMenu.addAction(AntennaToggle)
 
-    # <-------------------------------->
+        # <-------------------------------->
 
     # filename without extension
     def getsaveNAME(self, savename):
@@ -135,6 +137,7 @@ class UI(QtGui.QMainWindow):
     # read and print CSV file
     def readCSV(self, antennas):
         xyz = []
+        self.counter += 1
         with open(antennas, 'rb') as csvfile:
             coordinates = csv.reader(csvfile, delimiter=',')
             for row in coordinates:
@@ -147,7 +150,10 @@ class UI(QtGui.QMainWindow):
             self.assemblyMade = True
         for antenna in antennaLocs:
             self.convertDimensions(antenna[0], antenna[1], antenna[2], antenna[3], None, "add")
-
+        #if (self.counter > 1):
+            #call clear antenna
+            
+    
     def showCoordinates(self):
         for antenna in self.antennas:
             text = vtk.vtkTextActor3D()
