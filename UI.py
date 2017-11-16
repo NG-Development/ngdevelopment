@@ -23,8 +23,6 @@ class UI(QtGui.QMainWindow):
     nglist = []
     ngLOCS = []
 
-    counter = 0
-    
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
 
@@ -142,8 +140,22 @@ class UI(QtGui.QMainWindow):
 
     # read and print CSV file
     def readCSV(self, antennas):
+        # clear previous antennas before importing
+        temp = []
+        self.nglist = []
+        self.ngLOCS = []
+        for antenna in self.antennas:
+            temp.append(antenna)
+        for antenna in temp:
+            target = self.antennas[antenna]
+            self.assembly.RemovePart(target[0])
+            self.assembly.RemovePart(target[1])
+            self.render.RemoveActor(target[0])
+            self.render.RemoveActor(target[1])
+            self.antennas.pop(antenna)
+        del temp
+
         xyz = []
-        self.counter += 1
         with open(antennas, 'rb') as csvfile:
             coordinates = csv.reader(csvfile, delimiter=',')
             for row in coordinates:
@@ -156,8 +168,6 @@ class UI(QtGui.QMainWindow):
             self.assemblyMade = True
         for antenna in antennaLocs:
             self.convertDimensions(antenna[0], antenna[1], antenna[2], antenna[3], None, "add")
-        #if (self.counter > 1):
-            #call clear antenna
             
     
     def showCoordinates(self):
