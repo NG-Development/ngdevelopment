@@ -1,7 +1,7 @@
 # NGDevelopment
 2D and 3D visualizations of static models
 
-## Running our update release with an add-on feature for v0.4.0
+## Running our Official Release v1.0.0
 
 ### Support for Windows users only
 
@@ -9,7 +9,7 @@
 
  2. Extract the file anywhere you'd like. 
  
- 4. Locate the **UI.zip** and extract that folder to your desktop.
+ 4. Locate the **CEESIM Visualizer.zip** and extract that folder to your desktop.
  
  3. Locate and double click on **UI.exe** to demo our newest release.
  
